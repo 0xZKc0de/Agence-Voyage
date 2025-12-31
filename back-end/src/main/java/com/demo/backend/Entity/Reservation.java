@@ -1,6 +1,7 @@
 package com.demo.backend.Entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,4 +27,18 @@ public class Reservation {
 
     @Column(nullable = false)
     public String status;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
+
+
+    @ManyToOne
+    @JoinColumn(name = "admin_id", nullable = false)
+    private Admin admin;
+
+    @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Payment payment;
+
 }

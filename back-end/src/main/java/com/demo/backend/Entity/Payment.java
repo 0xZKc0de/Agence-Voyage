@@ -1,38 +1,36 @@
 package com.demo.backend.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Data @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "circuit")
-public class Circuit {
+@Table(name = "paiement")
+public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(nullable = false)
-    private String distination;
+    private Date datePaiement;
 
     @Column(nullable = false)
-    private Date dateDepart;
+    private double montant;
 
     @Column(nullable = false)
-    private Date dateArrive;
+    private String modePaiement;
 
     @Column(nullable = false)
-    private double prix;
+    private String statut;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "circuit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Reservation> reservations;
 
+    @OneToOne
+    @JoinColumn(name = "reservation_id", referencedColumnName = "id")
+    private Reservation reservation;
+    
 }
