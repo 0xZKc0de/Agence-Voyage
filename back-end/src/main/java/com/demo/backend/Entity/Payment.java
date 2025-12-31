@@ -32,5 +32,5 @@ public class Payment {
     @OneToOne
     @JoinColumn(name = "reservation_id", referencedColumnName = "id")
     private Reservation reservation;
-    
+
 }

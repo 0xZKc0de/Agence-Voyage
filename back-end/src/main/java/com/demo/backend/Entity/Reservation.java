@@ -32,7 +32,6 @@ public class Reservation {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-
     @ManyToOne
     @JoinColumn(name = "admin_id", nullable = false)
     private Admin admin;
@@ -40,5 +39,9 @@ public class Reservation {
     @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
     @JsonIgnore
     private Payment payment;
+
+    @ManyToOne
+    @JoinColumn(name = "circuit_id")
+    private Circuit circuit;
 
 }

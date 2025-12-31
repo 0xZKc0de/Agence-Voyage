@@ -35,4 +35,8 @@ public class Circuit {
     @OneToMany(mappedBy = "circuit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reservation> reservations;
 
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private Admin admin;
+
 }

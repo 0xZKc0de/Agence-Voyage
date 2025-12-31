@@ -37,4 +37,8 @@ public class Client {
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reservation> reservations;
 
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private Admin admin;
+
 }
