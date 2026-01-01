@@ -33,6 +33,9 @@ public class Admin {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String role = "ROLE_ADMIN";
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

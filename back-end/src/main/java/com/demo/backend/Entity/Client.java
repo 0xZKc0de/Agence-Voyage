@@ -33,6 +33,9 @@ public class Client {
     @Column(nullable = false, unique = true)
     private String phone;
 
+    @Column(nullable = false)
+    private String role = "ROLE_CLIENT";
+
     @JsonIgnore
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reservation> reservations;
