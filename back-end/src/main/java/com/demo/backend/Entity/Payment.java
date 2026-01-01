@@ -9,7 +9,7 @@ import java.util.Date;
 @Entity
 @Data @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "paiement")
+@Table(name = "payment")
 public class Payment {
 
     @Id
