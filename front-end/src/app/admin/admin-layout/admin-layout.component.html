@@ -1,0 +1,29 @@
+<div class="admin-container">
+
+  <!-- SIDEBAR (STATIC) -->
+  <aside class="sidebar">
+    <h2>Admin</h2>
+
+    <ul>
+      <li><a routerLink="dashboard">Dashboard</a></li>
+      <li><a routerLink="clients">Clients</a></li>
+      <li><a routerLink="reservations">Reservations</a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- TOP BAR (STATIC) -->
+    <header class="topbar">
+      <span>Admin Panel</span>
+    </header>
+
+    <!-- DYNAMIC PART -->
+    <section class="content">
+      <router-outlet></router-outlet>
+    </section>
+
+  </div>
+
+</div>
