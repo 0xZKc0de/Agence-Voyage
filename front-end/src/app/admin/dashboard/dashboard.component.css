@@ -31,14 +31,17 @@
 .stat-card {
   background: white;
   border-radius: 16px;
-  padding: 24px;
+  padding: 12px 15px; /* Reduced vertical padding */
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px; /* Slightly reduced gap */
   border: 1px solid #e8dfca;
   box-shadow: 0 10px 30px rgba(139, 128, 107, 0.12);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 70px; /* Set a fixed minimum height */
+  height: 70px; /* Fixed height for consistency */
 }
+
 
 .stat-card:hover {
   transform: translateY(-3px);
@@ -47,20 +50,22 @@
 
 /* Icon circle */
 .stat-icon {
-  width: 48px;
-  height: 48px;
+  margin-top: -10px;
+  width: 55px; /* Reduced from 48px */
+  height: 55px; /* Reduced from 48px */
   border-radius: 12px;
   background: #f9f7f3;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #a38f6d;
-  mask-size: 60%;
+  mask-size: 55%; /* Slightly smaller icon */
   mask-repeat: no-repeat;
   mask-position: center;
-  -webkit-mask-size: 60%;
+  -webkit-mask-size: 55%;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
+  flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
 /* Icons */
@@ -85,28 +90,122 @@
   -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5 3.8 9.7 9 11 5.2-1.3 9-6 9-11V5l-9-4z"/></svg>');
 }
 
+
 /* Stat text */
 .stat-info h3 {
-  font-size: 20px;
+  font-size: 18px; /* Slightly smaller */
   color: #8b806b;
   font-weight: 500;
+  margin-bottom: 8px; /* Reduced margin */
+  line-height: 1.2;
+  margin-top: -2.5px;
 }
+
 
 .stat-number {
-  font-size: 22px;
+  font-size: 20px; /* Slightly smaller */
   font-weight: 600;
   color: #5d534a;
+  line-height: 1.2;
 }
 
-/* Welcome card */
+.welcome-card {
+  background: #5d534a;
+  border: 1px solid #e8dfca;
+  border-radius: 18px;
+  padding: 28px 32px;
+  margin-top: 25px;
+  box-shadow: 0 10px 25px rgba(139, 128, 107, 0.12);
+}
+.welcome-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: visible; /* IMPORTANT for overflow effect */
+}
+
+.welcome-content {
+  max-width: 600px;
+}
+
+.welcome-content {
+  max-width: 60%;
+  z-index: 2;
+}
+.welcome-image {
+  position: absolute;
+  right: 70px;
+  top: -100px; /* this creates the overflow */
+  z-index: 1;
+}
+
+.welcome-image img {
+  width: 310px !important;   /* force size */
+  height: auto;
+  max-width: none !important;
+}
+
+
 .welcome-card h2 {
-  color: #5d534a;
-  font-size: 22px;
-  margin-bottom: 10px;
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  margin-top: 10px;
 }
 
 .welcome-card p {
-  color: #8b806b;
+  color: #ffffff;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.dashboard-middle {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+  margin: 15px 0;
+}
+
+.middle-image img {
+  width: 100% !important;
+  max-width: none !important;
+  opacity: 0.9;
+}
+
+.middle-table {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #e8dfca;
+  box-shadow: 0 10px 25px rgba(139, 128, 107, 0.12);
+}
+
+.middle-table h3 {
+  margin-bottom: 20px;
+  color: #5d534a;
+  text-align: center;
+  font-size: 23px;
+  margin-top: -0.5px;
+}
+
+.middle-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.middle-table th,
+.middle-table td {
+  text-align: left;
+  padding: 12px;
   font-size: 14px;
-  line-height: 1.6;
+}
+
+.middle-table th {
+  color: #8b806b;
+  border-bottom: 1px solid #e8dfca;
+}
+
+.middle-table td {
+  color: #5d534a;
 }
