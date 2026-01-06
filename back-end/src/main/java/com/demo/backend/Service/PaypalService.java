@@ -1,0 +1,82 @@
+package com.demo.backend.Service;
+
+import com.demo.backend.Entity.Payment;
+import com.demo.backend.Entity.Reservation;
+import com.demo.backend.Repository.PaymentRepository;
+import com.demo.backend.Repository.ReservationRepository;
+import com.paypal.core.PayPalHttpClient;
+import com.paypal.http.HttpResponse;
+import com.paypal.orders.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Date;
+
+@Service
+public class PaypalService {
+
+    @Autowired
+    private PayPalHttpClient payPalHttpClient;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
+
+    // 1. إنشاء طلب الدفع
+    public Order createOrder(int reservationId) throws IOException {
+        Reservation res = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+
+        // حساب المبلغ الإجمالي (عدد الأشخاص * سعر الرحلة)
+        double total = res.getNbPersons() * res.getCircuit().getPrix();
+
+        OrderRequest orderRequest = new OrderRequest();
+        orderRequest.checkoutPaymentIntent("CAPTURE");
+
+        // إعداد تفاصيل المبلغ
+        AmountWithBreakdown amount = new AmountWithBreakdown()
+                .currencyCode("USD") // يمكنك تغيير العملة حسب مشروعك
+                .value(String.format("%.2f", total));
+
+        PurchaseUnitRequest purchaseUnitRequest = new PurchaseUnitRequest().amountWithBreakdown(amount);
+        orderRequest.purchaseUnits(Collections.singletonList(purchaseUnitRequest));
+
+        // روابط العودة بعد الدفع
+        ApplicationContext applicationContext = new ApplicationContext()
+                .returnUrl("http://localhost:4200/payment/success?resId=" + reservationId)
+                .cancelUrl("http://localhost:4200/payment/cancel");
+        orderRequest.applicationContext(applicationContext);
+
+        OrdersCreateRequest request = new OrdersCreateRequest().requestBody(orderRequest);
+        return payPalHttpClient.execute(request).result();
+    }
+
+    // 2. تنفيذ الدفع وتحديث الجداول (Reservation & Payment)
+    @Transactional
+    public void captureOrder(String orderId, int reservationId) throws IOException {
+        OrdersCaptureRequest request = new OrdersCaptureRequest(orderId);
+        HttpResponse<Order> response = payPalHttpClient.execute(request);
+
+        if (response.result().status().equals("COMPLETED")) {
+            // تحديث حالة الحجز
+            Reservation res = reservationRepository.findById(reservationId).get();
+            res.setStatus("PAID");
+            reservationRepository.save(res);
+
+            // إنشاء سجل دفع جديد
+            Payment payment = new Payment();
+            payment.setReservation(res);
+            payment.setMontant(res.getNbPersons() * res.getCircuit().getPrix());
+            payment.setDatePaiement(new Date());
+            payment.setModePaiement("PAYPAL");
+            payment.setStatut("SUCCESS");
+
+            paymentRepository.save(payment);
+        }
+    }
+}
