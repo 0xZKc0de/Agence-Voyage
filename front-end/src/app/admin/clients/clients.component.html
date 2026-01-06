@@ -1,2 +1,68 @@
-<h1>Clients</h1>
-<p>Clients list</p>
+<div class="clients-page">
+
+  <!-- Header -->
+  <div class="clients-header">
+    <h2 class="clients-title">Liste des clients</h2>
+
+    <div class="clients-filters">
+      <input
+        type="text"
+        placeholder="Rechercher un client..."
+        [(ngModel)]="searchTerm"
+      />
+    </div>
+  </div>
+
+  <!-- Clients table -->
+  <div class="clients-table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Email</th>
+          <th>Téléphone</th>
+          <th>Réservations</th>
+          <th>Statut</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let client of filteredClients"
+            [class.inactive]="!client.active">
+          <td>#{{ client.id }}</td>
+          <td>{{ client.nom }}</td>
+          <td>{{ client.email }}</td>
+          <td>{{ client.telephone }}</td>
+          <td>{{ client.reservations }}</td>
+
+          <td>
+            <span class="status"
+                  [class.active]="client.active"
+                  [class.inactive-status]="!client.active">
+              {{ client.active ? 'Actif' : 'Désactivé' }}
+            </span>
+          </td>
+
+          <td>
+            <button class="btn-status"
+                    (click)="toggleStatus(client)">
+              {{ client.active ? 'Désactiver' : 'Activer' }}
+            </button>
+          </td>
+
+        </tr>
+
+        <!-- Empty state -->
+        <tr *ngIf="filteredClients.length === 0">
+          <td colspan="7" class="empty">
+            Aucun client trouvé
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+</div>

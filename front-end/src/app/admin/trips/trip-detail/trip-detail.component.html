@@ -1,0 +1,74 @@
+<!-- trips/trip-detail/trip-detail.component.html -->
+<div class="trip-detail-sidebar">
+  <div class="sidebar-header">
+    <button class="btn-close" (click)="closeSidebar()">
+      <i class="icon-close"></i>
+    </button>
+    <h3>Détails du circuit</h3>
+  </div>
+  
+  <div class="sidebar-content" *ngIf="trip">
+    <div class="trip-detail-image">
+      <img [src]="trip.imageUrl" [alt]="trip.nom" />
+    </div>
+    
+    <div class="trip-detail-info">
+      <div class="info-section">
+        <h4>{{ trip.nom }}</h4>
+        <p class="trip-description">{{ trip.description }}</p>
+      </div>
+      
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Destination</span>
+          <span class="info-value">{{ trip.destination }}</span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Durée</span>
+          <span class="info-value">{{ trip.duree }} jours</span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Date de départ</span>
+          <span class="info-value">{{ trip.dateDepart | date:'dd/MM/yyyy' }}</span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Prix</span>
+          <span class="info-value">{{ trip.prix | currency:'MAD ' }}</span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Places totales</span>
+          <span class="info-value">{{ trip.placesTotal }}</span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Places restantes</span>
+          <span class="info-value" [class.low]="trip.placesRestantes <= 3">
+            {{ trip.placesRestantes }}
+          </span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Statut</span>
+          <span class="info-value status-badge" [class.active]="trip.active">
+            {{ trip.active ? 'Actif' : 'Inactif' }}
+          </span>
+        </div>
+      </div>
+      
+      <div class="action-buttons">
+        <button class="btn-edit" (click)="editTrip()">
+          <i class="icon-edit"></i>
+          Modifier
+        </button>
+        <button class="btn-delete" (click)="deleteTrip()">
+          <i class="icon-delete"></i>
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

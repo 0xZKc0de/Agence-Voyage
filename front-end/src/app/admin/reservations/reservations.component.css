@@ -1,0 +1,94 @@
+.reservations-page {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header */
+.reservations-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.reservations-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #5d534a;
+}
+
+.reservations-filters input {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #e8dfca;
+  font-size: 14px;
+  outline: none;
+  width: 260px;
+}
+
+.reservations-filters input:focus {
+  border-color: #a38f6d;
+}
+
+/* Table card */
+.reservations-table-card {
+  background: white;
+  border-radius: 18px;
+  padding: 20px;
+  border: 1px solid #e8dfca;
+  box-shadow: 0 10px 30px rgba(139, 128, 107, 0.12);
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  padding: 12px;
+  font-size: 14px;
+  color: #8b806b;
+  border-bottom: 1px solid #e8dfca;
+}
+
+td {
+  padding: 12px;
+  font-size: 14px;
+  color: #5d534a;
+  border-bottom: 1px solid #f1ead8;
+}
+
+tr:hover {
+  background: #f9f7f3;
+}
+
+/* Empty */
+.empty {
+  text-align: center;
+  padding: 20px;
+  color: #8b806b;
+}
+
+/* Status badges */
+.status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status.confirmed {
+  background: #e6f4ea;
+  color: #2f855a;
+}
+
+.status.pending {
+  background: #fff7e6;
+  color: #b7791f;
+}
+
+.status.cancelled {
+  background: #fde8e8;
+  color: #c53030;
+}

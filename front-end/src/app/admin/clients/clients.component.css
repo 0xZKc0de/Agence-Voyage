@@ -1,0 +1,152 @@
+.clients-page {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Search bar */
+.search-card {
+  background: white;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #e8dfca;
+  box-shadow: 0 10px 25px rgba(139, 128, 107, 0.12);
+  margin-bottom: 20px;
+}
+
+.search-card input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e8dfca;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-card input:focus {
+  border-color: #a38f6d;
+}
+
+/* Table card */
+.clients-table-card {
+  background: white;
+  border-radius: 18px;
+  padding: 20px;
+  border: 1px solid #e8dfca;
+  box-shadow: 0 10px 30px rgba(139, 128, 107, 0.12);
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  padding: 12px;
+  font-size: 14px;
+  color: #8b806b;
+  border-bottom: 1px solid #e8dfca;
+}
+
+td {
+  padding: 12px;
+  font-size: 14px;
+  color: #5d534a;
+  border-bottom: 1px solid #f1ead8;
+}
+
+tr:hover {
+  background: #f9f7f3;
+}
+
+/* Empty state */
+.empty {
+  text-align: center;
+  padding: 20px;
+  color: #8b806b;
+}
+
+
+/* Status badge */
+.status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status.active {
+  background: #e6f4ea;
+  color: #2f855a;
+}
+
+.status.inactive-status {
+  background: #fde8e8;
+  color: #c53030;
+}
+
+/* Deactivate row style */
+tr.inactive {
+  opacity: 0.6;
+}
+
+/* Action button */
+.btn-status {
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  background: #5d534a;
+  color: white;
+  transition: background 0.2s ease;
+}
+
+.btn-status:hover {
+  background: #4a4138;
+}
+/* Header (title + filters) */
+.clients-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Title */
+.clients-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #5d534a;
+}
+
+/* Right side (search + filter) */
+.clients-filters {
+  display: flex;
+  gap: 12px;
+}
+
+/* Search input */
+.clients-filters input {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #e8dfca;
+  font-size: 14px;
+  outline: none;
+  width: 220px;
+}
+
+.clients-filters input:focus {
+  border-color: #a38f6d;
+}
+
+/* Status filter */
+.clients-filters select {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #e8dfca;
+  font-size: 14px;
+  background: white;
+  color: #5d534a;
+  cursor: pointer;
+}

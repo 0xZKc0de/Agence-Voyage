@@ -1,2 +1,59 @@
-<h1>Reservations</h1>
-<p>Reservations management</p>
+<div class="reservations-page">
+
+  <!-- Header -->
+  <div class="reservations-header">
+    <h2 class="reservations-title">Réservations des circuits</h2>
+
+    <div class="reservations-filters">
+      <input
+        type="text"
+        placeholder="Rechercher une réservation..."
+        [(ngModel)]="searchTerm"
+      />
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="reservations-table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Date</th>
+          <th>Personnes</th>
+          <th>Client</th>
+          <th>Circuit</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let r of filteredReservations">
+          <td>#{{ r.id }}</td>
+          <td>{{ r.date }}</td>
+          <td>{{ r.personnes }}</td>
+          <td>{{ r.client }}</td>
+          <td>{{ r.circuit }}</td>
+          <td>
+            <span class="status"
+              [ngClass]="{
+                confirmed: r.statut === 'Confirmée',
+                pending: r.statut === 'En attente',
+                cancelled: r.statut === 'Annulée'
+              }">
+              {{ r.statut }}
+            </span>
+          </td>
+        </tr>
+
+        <!-- Empty -->
+        <tr *ngIf="filteredReservations.length === 0">
+          <td colspan="6" class="empty">
+            Aucune réservation trouvée
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

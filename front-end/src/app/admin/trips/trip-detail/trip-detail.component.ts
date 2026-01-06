@@ -1,9 +1,8 @@
-// trips/trips.component.ts
+// trips/trip-detail/trip-detail.component.ts
 import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { filter } from 'rxjs/operators';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 interface Trip {
   id: number;
@@ -20,14 +19,17 @@ interface Trip {
 }
 
 @Component({
-  selector: 'app-trips',
-  templateUrl: './trips.component.html',
-  styleUrls: ['./trips.component.css'],
+  selector: 'app-trip-detail',
+  templateUrl: './trip-detail.component.html',
+  styleUrls: ['./trip-detail.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterOutlet] // Add RouterOutlet here
+  imports: [CommonModule, RouterModule, CurrencyPipe, DatePipe],
 })
-export class TripsComponent implements OnInit {
-  trips: Trip[] = [
+export class TripDetailComponent implements OnInit {
+  trip: Trip | null = null;
+
+  // Minimal mock list of trips
+  private allTrips: Trip[] = [
     {
       id: 1,
       nom: 'Marrakech Express',
@@ -81,57 +83,41 @@ export class TripsComponent implements OnInit {
       dateDepart: new Date('2024-08-05')
     }
   ];
-  
-  filteredTrips: Trip[] = [];
-  searchTerm: string = '';
-  sidebarActive: boolean = false;
-  
-  constructor(private router: Router) {}
-  
+
+  constructor(private route: ActivatedRoute, private router: Router) {}
+
   ngOnInit(): void {
-    this.filteredTrips = [...this.trips];
-    
-    // Listen to router events to detect when sidebar is active
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe(() => {
-      this.sidebarActive = this.hasActiveChild();
+    this.route.paramMap.subscribe(params => {
+      const tripId = Number(params.get('id'));
+      if (tripId) {
+        this.loadTrip(tripId);
+      }
     });
   }
-  
-  filterTrips(): void {
-    if (!this.searchTerm.trim()) {
-      this.filteredTrips = [...this.trips];
-      return;
+
+  loadTrip(id: number): void {
+    this.trip = this.allTrips.find(t => t.id === id) || null;
+
+    if (!this.trip) {
+      console.warn('Trip not found with id:', id);
+      this.closeSidebar();
     }
-    
-    const term = this.searchTerm.toLowerCase();
-    this.filteredTrips = this.trips.filter(trip =>
-      trip.nom.toLowerCase().includes(term) ||
-      trip.destination.toLowerCase().includes(term) ||
-      trip.description.toLowerCase().includes(term)
-    );
   }
-  
-  selectTrip(trip: Trip): void {
-    this.router.navigate(['/admin/trips', trip.id]);
-  }
-  
-  addNewTrip(): void {
-    this.router.navigate(['/admin/trips/new']);
-  }
-  
-  getAvailabilityPercentage(trip: Trip): number {
-    return (trip.placesRestantes / trip.placesTotal) * 100;
-  }
-  
-  hasActiveChild(): boolean {
-    const url = this.router.url;
-    return url.includes('/trips/new') || /\d+$/.test(url.split('/').pop() || '');
-  }
-  
+
   closeSidebar(): void {
     this.router.navigate(['/admin/trips']);
   }
 
+  editTrip(): void {
+    if (this.trip) {
+      this.router.navigate(['/admin/trips/edit', this.trip.id]);
+    }
+  }
+
+  deleteTrip(): void {
+    if (this.trip && confirm(`Êtes-vous sûr de vouloir supprimer le circuit "${this.trip.nom}" ?`)) {
+      console.log('Deleting trip:', this.trip.id);
+      this.closeSidebar();
+    }
+  }
 }
