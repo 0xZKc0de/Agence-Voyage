@@ -16,28 +16,39 @@ public class CircuitController {
     @Autowired
     private CircuitService circuitService;
 
+    // جلب جميع الرحلات
     @GetMapping
     public List<Circuit> findAll() {
         return circuitService.findAll();
     }
 
+    // جلب قائمة الوجهات للفلاتر
     @GetMapping("/destinations")
     public List<String> getDestinations() {
         return circuitService.getUniqueDestinations();
     }
 
-    @GetMapping("/{destination}")
+    // جلب رحلة واحدة بواسطة الـ ID (الذي طلبته)
+    @GetMapping("/get/{id}")
+    public ResponseEntity<Circuit> getCircuitById(@PathVariable int id) {
+        return circuitService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // البحث حسب الوجهة (تم تحديث المسار لتجنب التضارب)
+    @GetMapping("/search/{destination}")
     public List<Circuit> findByDestination(@PathVariable String destination) {
         return circuitService.findByDistination(destination);
     }
 
-    // Add Circuit
+    // إضافة رحلة
     @PostMapping("/add")
     public ResponseEntity<Circuit> addCircuit(@RequestBody Circuit circuit) {
         return ResponseEntity.ok(circuitService.addCircuit(circuit));
     }
 
-    // Update Circuit
+    // تحديث رحلة
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateCircuit(@PathVariable int id, @RequestBody Circuit circuit) {
         try {
@@ -47,7 +58,7 @@ public class CircuitController {
         }
     }
 
-    // Delete Circuit
+    // حذف رحلة
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteCircuit(@PathVariable int id) {
         try {

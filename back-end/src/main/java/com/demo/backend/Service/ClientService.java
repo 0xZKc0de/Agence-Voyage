@@ -1,13 +1,14 @@
 package com.demo.backend.Service;
 
 import com.demo.backend.DTO.RegistrationRequest;
-import com.demo.backend.Entity.Admin;
 import com.demo.backend.Entity.Client;
 import com.demo.backend.Repository.AdminRepository;
 import com.demo.backend.Repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class ClientService {
@@ -71,5 +72,9 @@ public class ClientService {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Client not found")); //
         clientRepository.delete(client); //
+    }
+
+    public Optional<Client> findById(Integer loggedUserId) {
+        return clientRepository.findById(loggedUserId);
     }
 }

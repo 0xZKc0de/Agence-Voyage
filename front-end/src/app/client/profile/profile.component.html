@@ -1,121 +1,79 @@
-<div class="profile-page">
-  <div class="profile-header">
-    <h1>Mon Profil</h1>
-    <p>Gérez vos informations personnelles</p>
+<div class="profile-container">
+
+  <div *ngIf="successMessage" class="alert-success"
+       style="padding: 15px; background: #c6f6d5; border-radius: 15px; margin-bottom: 25px; color: #22543d; font-weight: 600;">
+    ✨ {{ successMessage }}
   </div>
 
-  <div class="profile-content">
-    <!-- SUCCESS/ERROR MESSAGES -->
-    <div class="alert alert-success" *ngIf="successMessage">
-      {{ successMessage }}
-    </div>
-    
-    <div class="alert alert-error" *ngIf="errorMessage">
-      {{ errorMessage }}
-    </div>
+  <div class="profile-wrapper" *ngIf="!isLoading && client">
 
-    <!-- LOADING -->
-    <div class="loading-spinner" *ngIf="isLoading">
-      Chargement du profil...
-    </div>
+    <aside class="user-sidebar">
+      <div class="avatar-container">
+        <div class="avatar-placeholder">
+          {{ client.firstName?.charAt(0) }}{{ client.lastName?.charAt(0) }}
+        </div>
+      </div>
+      <h2>{{ client.firstName }} {{ client.lastName }}</h2>
+      <span class="role-tag">{{ client.role }}</span>
 
-    <!-- PROFILE CARD -->
-    <div class="profile-card" *ngIf="client && !isLoading">
-      <div class="profile-header-actions">
-        <button class="btn-edit" (click)="toggleEdit()" *ngIf="!isEditing">
-          ✏️ Modifier le profil
-        </button>
-        <div class="edit-actions" *ngIf="isEditing">
-          <button class="btn-save" (click)="onSubmit()" [disabled]="!profileForm.valid">
-            💾 Enregistrer
-          </button>
-          <button class="btn-cancel" (click)="toggleEdit()">
-            ❌ Annuler
+      <div style="margin-top: 30px; text-align: left; border-top: 1px solid #f0f0f0; padding-top: 20px;">
+        <p style="font-size: 0.8rem; color: #a0aec0; text-transform: uppercase; font-weight: 700;">Contact</p>
+        <p style="font-size: 0.9rem; margin: 5px 0;">📧 {{ client.email }}</p>
+        <p style="font-size: 0.9rem;">📞 {{ client.phone }}</p>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-card">
+        <div class="card-header">
+          <h3>Paramètres du Profil</h3>
+          <button class="btn-edit-toggle" (click)="toggleEdit()">
+            {{ isEditing ? '❌ Annuler' : '✏️ Modifier le profil' }}
           </button>
         </div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Prénom</label>
+              <input type="text" formControlName="firstName" [readonly]="!isEditing" placeholder="Ex: Jean">
+            </div>
+
+            <div class="form-group">
+              <label>Nom</label>
+              <input type="text" formControlName="lastName" [readonly]="!isEditing" placeholder="Ex: Dupont">
+            </div>
+
+            <div class="form-group full-width">
+              <label>Adresse E-mail</label>
+              <input type="email" formControlName="email" readonly>
+            </div>
+
+            <div class="form-group full-width">
+              <label>Numéro de Téléphone</label>
+              <input type="text" formControlName="phone" [readonly]="!isEditing">
+            </div>
+          </div>
+
+          <button type="submit" class="btn-save" *ngIf="isEditing" [disabled]="!profileForm.valid">
+            Enregistrer les modifications
+          </button>
+        </form>
       </div>
 
-      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-        <div class="profile-grid">
-          <div class="form-group">
-            <label>Nom</label>
-            <input type="text" formControlName="nom" [readonly]="!isEditing" 
-                   [class.editing]="isEditing">
-            <div class="error" *ngIf="profileForm.get('nom')?.invalid && profileForm.get('nom')?.touched">
-              Nom invalide
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Prénom</label>
-            <input type="text" formControlName="prenom" [readonly]="!isEditing"
-                   [class.editing]="isEditing">
-            <div class="error" *ngIf="profileForm.get('prenom')?.invalid && profileForm.get('prenom')?.touched">
-              Prénom invalide
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" formControlName="email" [readonly]="!isEditing"
-                   [class.editing]="isEditing">
-            <div class="error" *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
-              Email invalide
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Téléphone</label>
-            <input type="tel" formControlName="telephone" [readonly]="!isEditing"
-                   [class.editing]="isEditing">
-            <div class="error" *ngIf="profileForm.get('telephone')?.invalid && profileForm.get('telephone')?.touched">
-              Téléphone invalide (10 chiffres)
-            </div>
-          </div>
-
-          <div class="form-group full-width">
-            <label>Adresse</label>
-            <textarea formControlName="adresse" [readonly]="!isEditing"
-                      [class.editing]="isEditing" rows="3"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Date de naissance</label>
-            <input type="date" formControlName="dateNaissance" [readonly]="!isEditing"
-                   [class.editing]="isEditing">
-          </div>
-
-          <div class="form-group">
-            <label>Date d'inscription</label>
-            <input type="text" [value]="client.dateInscription | date:'dd/MM/yyyy'" readonly>
-          </div>
+      <div class="danger-card">
+        <div class="danger-info">
+          <h4>Sécurité du compte</h4>
+          <p>La suppression de votre compte est définitive.</p>
         </div>
-      </form>
-
-      <!-- STATISTICS -->
-      <div class="profile-stats">
-        <div class="stat-item">
-          <span class="stat-label">Réservations</span>
-          <span class="stat-value">5</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Dernière réservation</span>
-          <span class="stat-value">15/01/2024</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Total dépensé</span>
-          <span class="stat-value">12 500 MAD</span>
-        </div>
+        <button class="btn-delete" (click)="deleteAccount()">Supprimer</button>
       </div>
+    </main>
 
-      <!-- DANGER ZONE -->
-      <div class="danger-zone">
-        <h3>Zone de danger</h3>
-        <p>Ces actions sont irréversibles. Soyez certain de votre choix.</p>
-        <button class="btn-delete" (click)="deleteAccount()">
-          🗑️ Supprimer mon compte
-        </button>
-      </div>
-    </div>
   </div>
+
+  <div *ngIf="isLoading" style="text-align: center; padding: 100px;">
+    <p style="color: #a38f6d; font-weight: 600;">Chargement de vos informations...</p>
+  </div>
+
 </div>
