@@ -10,9 +10,9 @@
       <div class="form-row">
         <div class="form-group">
           <label for="prenom">Prénom *</label>
-          <input 
-            type="text" 
-            id="prenom" 
+          <input
+            type="text"
+            id="prenom"
             formControlName="prenom"
             placeholder="Votre prénom"
             [class.error]="registerForm.get('prenom')?.invalid && registerForm.get('prenom')?.touched">
@@ -24,9 +24,9 @@
 
         <div class="form-group">
           <label for="nom">Nom *</label>
-          <input 
-            type="text" 
-            id="nom" 
+          <input
+            type="text"
+            id="nom"
             formControlName="nom"
             placeholder="Votre nom"
             [class.error]="registerForm.get('nom')?.invalid && registerForm.get('nom')?.touched">
@@ -39,9 +39,9 @@
 
       <div class="form-group">
         <label for="email">Email *</label>
-        <input 
-          type="email" 
-          id="email" 
+        <input
+          type="email"
+          id="email"
           formControlName="email"
           placeholder="votre@email.com"
           [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
@@ -53,9 +53,9 @@
 
       <div class="form-group">
         <label for="telephone">Téléphone *</label>
-        <input 
-          type="tel" 
-          id="telephone" 
+        <input
+          type="tel"
+          id="telephone"
           formControlName="telephone"
           placeholder="0623456789"
           [class.error]="registerForm.get('telephone')?.invalid && registerForm.get('telephone')?.touched">
@@ -68,23 +68,23 @@
       <div class="form-row">
         <div class="form-group">
           <label for="motDePasse">Mot de passe *</label>
-          <input 
-            type="password" 
-            id="motDePasse" 
+          <input
+            type="password"
+            id="motDePasse"
             formControlName="motDePasse"
             placeholder="••••••••"
             [class.error]="registerForm.get('motDePasse')?.invalid && registerForm.get('motDePasse')?.touched">
           <div *ngIf="registerForm.get('motDePasse')?.invalid && registerForm.get('motDePasse')?.touched" class="error-message">
-            <span *ngIf="registerForm.get('motDePasse')?.errors?.['required']">Mot de passe requis</span>
+            <span *ngStatus="registerForm.get('motDePasse')?.errors?.['required']">Mot de passe requis</span>
             <span *ngIf="registerForm.get('motDePasse')?.errors?.['minlength']">Minimum 8 caractères</span>
           </div>
         </div>
 
         <div class="form-group">
           <label for="confirmMotDePasse">Confirmation *</label>
-          <input 
-            type="password" 
-            id="confirmMotDePasse" 
+          <input
+            type="password"
+            id="confirmMotDePasse"
             formControlName="confirmMotDePasse"
             placeholder="••••••••"
             [class.error]="(registerForm.get('confirmMotDePasse')?.invalid || registerForm.errors?.['passwordMismatch']) && registerForm.get('confirmMotDePasse')?.touched">
@@ -94,12 +94,16 @@
         </div>
       </div>
 
+      <div *ngIf="errorMessage" class="alert alert-error" style="background: #fff5f5; color: #d98282; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #f8d7da; font-size: 14px; text-align: center;">
+        {{ errorMessage }}
+      </div>
+
       <div *ngIf="successMessage" class="alert alert-success">
         {{ successMessage }}
       </div>
 
-      <button 
-        type="submit" 
+      <button
+        type="submit"
         class="btn-register"
         [disabled]="registerForm.invalid || isLoading">
         <span *ngIf="!isLoading">S'inscrire</span>
@@ -107,11 +111,11 @@
       </button>
 
       <div class="register-footer">
-        <p>Déjà un compte ? 
-          <a (click)="allerVersLogin()" class="link">Se connecter</a>
+        <p>Déjà un compte ?
+          <a (click)="allerVersLogin()" class="link" style="cursor: pointer; color: #a38f6d; font-weight: 600;">Se connecter</a>
         </p>
         <p class="terms">
-          En vous inscrivant, vous acceptez nos 
+          En vous inscrivant, vous acceptez nos
           <a href="#" class="link">Conditions Générales</a>
         </p>
       </div>

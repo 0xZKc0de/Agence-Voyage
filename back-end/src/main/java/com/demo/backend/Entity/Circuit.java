@@ -28,6 +28,9 @@ public class Circuit {
     @Column(nullable = false)
     private Date dateArrive;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     @Column(nullable = false)
     private double prix;
 

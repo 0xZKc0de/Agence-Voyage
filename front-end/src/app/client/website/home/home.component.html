@@ -4,7 +4,7 @@
     <div class="hero-content">
       <h1>Découvrez le Monde avec Nous</h1>
       <p class="hero-subtitle">
-        Des voyages inoubliables, des expériences authentiques, 
+        Des voyages inoubliables, des expériences authentiques,
         des souvenirs qui durent toute une vie
       </p>
       <div class="hero-buttons">
@@ -27,7 +27,7 @@
       <h2>Circuits Populaires</h2>
       <p>Nos voyages les plus appréciés par nos clients</p>
     </div>
-    
+
     <div class="circuits-grid" *ngIf="!isLoading">
       <div class="circuit-card" *ngFor="let circuit of featuredCircuits">
         <div class="circuit-image">
@@ -42,19 +42,19 @@
           <p class="circuit-description">{{ circuit.description }}</p>
           <div class="circuit-details">
             <span class="circuit-duration">⏱️ {{ circuit.duree }} jours</span>
-            <span class="circuit-places" 
+            <span class="circuit-places"
                   [class.low]="circuit.placesRestantes <= 3">
               🏷️ {{ circuit.placesRestantes }} places
             </span>
           </div>
-          <button class="btn-circuit-details" 
+          <button class="btn-circuit-details"
                   [routerLink]="['/client/circuits', circuit.id]">
             Voir détails
           </button>
         </div>
       </div>
     </div>
-    
+
     <div class="loading-spinner" *ngIf="isLoading">
       Chargement des circuits...
     </div>
@@ -65,26 +65,26 @@
     <div class="section-header">
       <h2>Pourquoi Nous Choisir ?</h2>
     </div>
-    
+
     <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon">✓</div>
         <h3>Meilleurs Prix</h3>
         <p>Garantie du meilleur prix pour tous nos circuits</p>
       </div>
-      
+
       <div class="feature-card">
         <div class="feature-icon">🏨</div>
         <h3>Hébergement Premium</h3>
         <p>Hôtels 4* et riads authentiques sélectionnés avec soin</p>
       </div>
-      
+
       <div class="feature-card">
         <div class="feature-icon">👨‍✈️</div>
         <h3>Guides Experts</h3>
         <p>Guides francophones passionnés et expérimentés</p>
       </div>
-      
+
       <div class="feature-card">
         <div class="feature-icon">🔒</div>
         <h3>Réservation Sécurisée</h3>
