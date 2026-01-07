@@ -21,6 +21,7 @@
   padding: 20px 24px;
   background: #f9f7f3;
   border-bottom: 1px solid #e8dfca;
+  box-sizing: border-box; 
 }
 
 .sidebar-header h3 {
@@ -50,6 +51,7 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+  box-sizing: border-box;
 }
 
 .form-section {
@@ -71,6 +73,8 @@
   border-radius: 8px;
   border: 1px solid #ddd2b8;
   font-family: inherit;
+  box-sizing: border-box; /* Inclut padding et border dans la largeur */
+  max-width: 100%; /* Empêche le débordement */
 }
 
 .form-section input:focus,
@@ -88,6 +92,7 @@
 
 .form-row .form-section {
   flex: 1;
+  min-width: 0;
 }
 
 /* ===== CHECKBOX ===== */

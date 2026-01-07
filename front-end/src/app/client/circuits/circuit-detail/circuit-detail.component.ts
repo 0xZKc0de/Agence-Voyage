@@ -77,6 +77,19 @@ export class CircuitDetailComponent implements OnInit {
     this.router.navigate(['/client/circuits']);
   }
 
+  reserveCircuit() {
+    if (this.circuit && this.participants <= this.circuit.placesRestantes) {
+      this.router.navigate(['/client/reservations/create'], {
+        queryParams: {
+          circuitId: this.circuit.id,
+          participants: this.participants,
+          prix: this.circuit.prix,
+          total: this.calculateTotal()
+        }
+      });
+    }
+  }
+}
   increment() { if (this.participants < (this.circuit?.nb_places || 1)) this.participants++; }
   decrement() { if (this.participants > 1) this.participants--; }
 }

@@ -1,0 +1,179 @@
+<div class="reservations-page">
+  <!-- HEADER -->
+  <div class="reservations-header">
+    <div class="header-left">
+      <h2>Mes Réservations</h2>
+      <p>Gérez toutes vos réservations de voyage</p>
+    </div>
+    
+    <div class="header-right">
+      <button class="btn-new-reservation" routerLink="/client/circuits">
+        + Nouvelle réservation
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Rechercher par client, circuit..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="filterReservations()"
+        class="search-input"
+      />
+    </div>
+    
+    <div class="filter-options">
+      <select 
+        class="filter-select"
+        [(ngModel)]="statusFilter"
+        (ngModelChange)="filterReservations()"
+      >
+        <option value="">Tous les statuts</option>
+        <option value="EN_ATTENTE">En attente</option>
+        <option value="CONFIRMEE">Confirmées</option>
+        <option value="ANNULEE">Annulées</option>
+      </select>
+      
+      <button 
+        class="btn-clear-filters" 
+        (click)="clearFilters()"
+        *ngIf="searchTerm || statusFilter"
+      >
+        Effacer les filtres
+      </button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="reservations-stats">
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <div class="stat-info">
+        <span class="stat-label">Total</span>
+        <span class="stat-number">{{ totalReservations }}</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-info">
+        <span class="stat-label">Confirmées</span>
+        <span class="stat-number">{{ confirmedReservations }}</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">⏱️</div>
+      <div class="stat-info">
+        <span class="stat-label">En attente</span>
+        <span class="stat-number">{{ pendingReservations }}</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-info">
+        <span class="stat-label">Total dépensé</span>
+        <span class="stat-number">{{ totalSpent | currency:'MAD ' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-spinner" *ngIf="isLoading">
+    Chargement des réservations...
+  </div>
+
+  <!-- RESERVATIONS TABLE -->
+  <div class="reservations-container" *ngIf="!isLoading">
+    <div class="results-count">
+      {{ filteredReservations.length }} réservation{{ filteredReservations.length > 1 ? 's' : '' }} trouvée{{ filteredReservations.length > 1 ? 's' : '' }}
+    </div>
+    
+    <div class="table-container" *ngIf="filteredReservations.length > 0">
+      <table class="reservations-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Date réservation</th>
+            <th>Date départ</th>
+            <th>Personnes</th>
+            <th>Client</th>
+            <th>Circuit</th>
+            <th>Prix total</th>
+            <th>Statut</th>
+            <th>Paiement</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let reservation of filteredReservations">
+            <td class="reservation-id">#{{ reservation.id }}</td>
+            <td>{{ reservation.dateReservation | date:'dd/MM/yyyy' }}</td>
+            <td>{{ reservation.dateDepart | date:'dd/MM/yyyy' }}</td>
+            <td>{{ reservation.participants }}</td>
+            <td>
+              <div class="client-info">
+                <strong>{{ reservation.clientNom }}</strong>
+                <small>{{ reservation.clientEmail }}</small>
+              </div>
+            </td>
+            <td>
+              <div class="circuit-info">
+                <strong>{{ reservation.circuitNom }}</strong>
+                <small>📍 {{ reservation.circuitDestination }}</small>
+              </div>
+            </td>
+            <td class="price">{{ reservation.prixTotal | currency:'MAD ' }}</td>
+            <td>
+              <span class="badge" [class]="getStatusBadgeClass(reservation.statut)">
+                {{ getStatusText(reservation.statut) }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" [class]="getPaymentBadgeClass(reservation.paiementStatut || 'EN_ATTENTE')">
+                {{ getPaymentText(reservation.paiementStatut || 'EN_ATTENTE') }}
+              </span>
+            </td>
+            <td class="actions">
+              <button 
+                class="btn-cancel" 
+                (click)="cancelReservation(reservation)"
+                *ngIf="reservation.statut !== 'ANNULEE'"
+              >
+                ❌ Annuler
+              </button>
+              <button 
+                class="btn-pay" 
+                (click)="processPayment(reservation)"
+                *ngIf="reservation.statut === 'EN_ATTENTE'"
+                >
+                💳 Payer
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- NO RESULTS -->
+    <div class="no-reservations" *ngIf="filteredReservations.length === 0 && !isLoading">
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h3>Aucune réservation trouvée</h3>
+        <p *ngIf="searchTerm || statusFilter">
+          Aucune réservation ne correspond à vos critères de recherche.
+        </p>
+        <p *ngIf="!searchTerm && !statusFilter">
+          Vous n'avez pas encore de réservations.
+        </p>
+        <button class="btn-new-reservation" routerLink="/client/circuits">
+          + Faire une nouvelle réservation
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

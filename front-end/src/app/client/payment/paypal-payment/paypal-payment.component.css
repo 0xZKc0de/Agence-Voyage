@@ -1,0 +1,374 @@
+.payment-page {
+  min-height: 100vh;
+  background: #f9f7f3;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px 40px;
+}
+
+.payment-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* HEADER */
+.payment-header {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.payment-header h2 {
+  font-size: 36px;
+  color: #5d534a;
+  margin-bottom: 10px;
+}
+
+.payment-header p {
+  color: #8b806b;
+  font-size: 16px;
+}
+
+/* LOADING */
+.loading-spinner {
+  text-align: center;
+  padding: 60px;
+  color: #8b806b;
+  font-size: 16px;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e8dfca;
+}
+
+/* PAYMENT CONTENT */
+.payment-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.payment-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* INFO CARD */
+.info-card {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  border: 1px solid #e8dfca;
+  box-shadow: 0 5px 20px rgba(139, 128, 107, 0.08);
+}
+
+.info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f9f7f3;
+}
+
+.info-header h3 {
+  font-size: 18px;
+  color: #5d534a;
+  margin: 0;
+}
+
+.secure-badge {
+  background: #f0f9eb;
+  color: #67c23a;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #e1f3d8;
+}
+
+.info-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row span:first-child {
+  color: #8b806b;
+  font-size: 14px;
+}
+
+.detail-row .value {
+  color: #5d534a;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.detail-row .amount {
+  font-size: 18px;
+  font-weight: 600;
+  color: #a38f6d;
+}
+
+/* PAYMENT METHODS */
+.payment-methods {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  border: 1px solid #e8dfca;
+  box-shadow: 0 5px 20px rgba(139, 128, 107, 0.08);
+}
+
+.methods-header {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f9f7f3;
+}
+
+.methods-header h3 {
+  font-size: 18px;
+  color: #5d534a;
+  margin: 0;
+}
+
+.methods-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.method-card {
+  border: 2px solid #e8dfca;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.method-card:hover {
+  border-color: #a38f6d;
+  background: #fcfaf6;
+}
+
+.method-card.active {
+  border-color: #a38f6d;
+  background: #f9f7f3;
+}
+
+.method-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.method-icon {
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.method-card.active .method-icon {
+  background: #e8dfca;
+}
+
+.method-info {
+  flex: 1;
+}
+
+.method-info h4 {
+  font-size: 16px;
+  color: #5d534a;
+  margin: 0 0 5px 0;
+}
+
+.method-info p {
+  color: #8b806b;
+  font-size: 13px;
+  margin: 0;
+}
+
+.method-radio input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #a38f6d;
+}
+
+/* PAYMENT ACTIONS */
+.payment-actions {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  border: 1px solid #e8dfca;
+  box-shadow: 0 5px 20px rgba(139, 128, 107, 0.08);
+}
+
+.security-notice {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: #f9f7f3;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  border: 1px solid #e8dfca;
+}
+
+.security-icon {
+  font-size: 24px;
+}
+
+.security-text strong {
+  display: block;
+  color: #5d534a;
+  margin-bottom: 4px;
+}
+
+.security-text p {
+  color: #8b806b;
+  font-size: 13px;
+  margin: 0;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.btn-cancel,
+.btn-pay {
+  flex: 1;
+  padding: 18px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-cancel {
+  background: #f0f0f0;
+  color: #8b806b;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #e0e0e0;
+  color: #5d534a;
+}
+
+.btn-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-pay {
+  background: #a38f6d;
+  color: white;
+}
+
+.btn-pay:hover:not(:disabled) {
+  background: #8b806b;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(139, 128, 107, 0.2);
+}
+
+.btn-pay:disabled {
+  background: #c0c4cc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* PAYMENT SECURITY */
+.payment-security {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  border: 1px solid #e8dfca;
+  box-shadow: 0 5px 20px rgba(139, 128, 107, 0.08);
+  text-align: center;
+}
+
+.payment-security h4 {
+  font-size: 16px;
+  color: #5d534a;
+  margin-bottom: 20px;
+}
+
+.security-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  border-radius: 10px;
+  background: #f9f7f3;
+  border: 1px solid #e8dfca;
+}
+
+.feature-icon {
+  font-size: 24px;
+}
+
+.feature span:last-child {
+  font-size: 12px;
+  color: #8b806b;
+  font-weight: 500;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .payment-page {
+    padding: 20px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .btn-cancel,
+  .btn-pay {
+    width: 100%;
+  }
+  
+  .security-features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
