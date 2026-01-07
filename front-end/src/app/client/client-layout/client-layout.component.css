@@ -139,6 +139,11 @@
   background: #8b806b;
 }
 
+.auth-links {
+  display: flex;
+  gap: 12px;
+}
+
 /* MAIN CONTENT */
 .client-main {
   flex: 1;

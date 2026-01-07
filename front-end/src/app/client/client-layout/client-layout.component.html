@@ -20,9 +20,9 @@
         <span class="client-name">Bonjour, {{ clientName }}</span>
         <button class="btn-logout" (click)="logout()">Déconnexion</button>
       </div>
-      <div *ngIf="!isLoggedIn">
-        <a routerLink="/client/auth/login" class="btn-login">Se connecter</a>
-        <a routerLink="/client/auth/register" class="btn-register">S'inscrire</a>
+      <div *ngIf="!isLoggedIn" class="auth-links">
+        <a routerLink="/auth/login" class="btn-login">Se connecter</a>
+        <a routerLink="/auth/register" class="btn-register">S'inscrire</a>
       </div>
     </div>
   </nav>
