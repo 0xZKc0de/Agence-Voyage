@@ -45,4 +45,8 @@ public class CircuitService {
                 .orElseThrow(() -> new RuntimeException("Circuit not found with id: " + id));
         circuitRepository.delete(circuit);
     }
+
+    public List<String> getUniqueDestinations() {
+        return circuitRepository.findDistinctDestinations();
+    }
 }

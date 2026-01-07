@@ -21,6 +21,11 @@ public class CircuitController {
         return circuitService.findAll();
     }
 
+    @GetMapping("/destinations")
+    public List<String> getDestinations() {
+        return circuitService.getUniqueDestinations();
+    }
+
     @GetMapping("/{destination}")
     public List<Circuit> findByDestination(@PathVariable String destination) {
         return circuitService.findByDistination(destination);
