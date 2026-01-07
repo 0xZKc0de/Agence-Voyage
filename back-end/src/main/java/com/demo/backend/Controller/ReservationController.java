@@ -21,4 +21,25 @@ public class ReservationController {
         Reservation reservation = reservationService.initiateReservation(request);
         return ResponseEntity.ok(reservation);
     }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<?> cancelReservation(@PathVariable int id) {
+        try {
+            Reservation cancelledRes = reservationService.cancelReservation(id);
+            return ResponseEntity.ok(cancelledRes);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    @PutMapping("/{id}/update")
+    public ResponseEntity<?> updateReservation(@PathVariable int id, @RequestBody ReservationRequest request) {
+        try {
+            Reservation updatedRes = reservationService.updateReservation(id, request);
+            return ResponseEntity.ok(updatedRes);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

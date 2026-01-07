@@ -8,6 +8,7 @@ import com.demo.backend.Repository.ClientRepository;
 import com.demo.backend.Repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Optional;
@@ -42,6 +43,45 @@ public class ReservationService {
         res.setNbPersons(request.getNbPersons());
         res.setDateReservation(new Date());
         res.setStatus("PENDING");
+
+        return reservationRepository.save(res);
+    }
+
+    @Transactional
+    public Reservation cancelReservation(int id) {
+        Reservation res = reservationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+
+        if ("CANCELLED".equals(res.getStatus())) {
+            throw new RuntimeException("This reservation is already cancelled");
+        }
+
+        if ("PAID".equals(res.getStatus())) {
+            throw new RuntimeException("Cannot cancel a paid reservation directly. Please contact support.");
+        }
+
+        res.setStatus("CANCELLED");
+
+        return reservationRepository.save(res);
+    }
+
+    @Transactional
+    public Reservation updateReservation(int id, ReservationRequest request) {
+        Reservation res = reservationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+
+        if (!"PENDING".equals(res.getStatus())) {
+            throw new RuntimeException("Cannot update reservation. Only PENDING reservations can be modified.");
+        }
+
+        if (request.getCircuitId() != 0) {
+            Circuit circuit = circuitRepository.findById(request.getCircuitId())
+                    .orElseThrow(() -> new RuntimeException("New Circuit not found"));
+            res.setCircuit(circuit);
+        }
+
+        res.setNbPersons(request.getNbPersons());
+        res.setDateReservation(new Date());
 
         return reservationRepository.save(res);
     }
