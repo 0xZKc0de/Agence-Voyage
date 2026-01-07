@@ -35,7 +35,7 @@ export class CircuitsComponent implements OnInit {
   hasActiveChild = false;
 
   // Options pour les filtres
-  destinations: string[] = ['Marakkech', 'Merzouga', 'Essaouira', 'Toubkal'];
+  destinations: string[] = ['Marrakech', 'Merzouga', 'Essaouira', 'Toubkal'];
   durations: string[] = ['3', '5', '7'];
 
   constructor(
@@ -72,7 +72,7 @@ export class CircuitsComponent implements OnInit {
         {
           id: 1,
           nom: 'Marrakech Impériale',
-          destination: 'Marakkech',
+          destination: 'Marrakech',
           description: 'Découvrez la ville ocre et ses trésors',
           prix: 2999,
           duree: 7,
@@ -179,6 +179,12 @@ export class CircuitsComponent implements OnInit {
 
   reserveCircuit(circuit: Circuit) {
     console.log('Réservation du circuit:', circuit.nom);
-    // À implémenter: navigation vers la page de réservation
+    this.router.navigate(['/client/reservations/create'], {
+      queryParams: {
+        circuitId: circuit.id,
+        participants: 1,
+        prix: circuit.prix
+      }
+    });
   }
 }

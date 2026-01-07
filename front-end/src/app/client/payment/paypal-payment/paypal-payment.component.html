@@ -1,0 +1,125 @@
+<div class="payment-page">
+  <div class="payment-container">
+    <!-- HEADER -->
+    <div class="payment-header">
+      <h2>Paiement Sécurisé</h2>
+      <p>Finalisez votre réservation avec un paiement sécurisé</p>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-spinner" *ngIf="isLoading">
+      Chargement des détails du paiement...
+    </div>
+
+    <!-- PAYMENT CONTENT -->
+    <div class="payment-content" *ngIf="!isLoading && paymentDetails">
+      <!-- PAYMENT INFO -->
+      <div class="payment-info">
+        <div class="info-card">
+          <div class="info-header">
+            <h3>Détails du paiement</h3>
+            <div class="secure-badge">
+              🔒 Sécurisé
+            </div>
+          </div>
+          
+          <div class="info-details">
+            <div class="detail-row">
+              <span>Numéro de réservation</span>
+              <span class="value">#{{ paymentDetails.reservationId }}</span>
+            </div>
+            
+            <div class="detail-row">
+              <span>Montant à payer</span>
+              <span class="value amount">{{ paymentDetails.amount | currency:'MAD ' }}</span>
+            </div>
+            
+            <div class="detail-row">
+              <span>Description</span>
+              <span class="value">{{ paymentDetails.description }}</span>
+            </div>
+            
+            <div class="detail-row">
+              <span>Email de facturation</span>
+              <span class="value">{{ paymentDetails.clientEmail }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAYMENT METHODS -->
+        <div class="payment-methods">
+          <div class="methods-header">
+            <h3>Méthodes de paiement</h3>
+          </div>
+          
+          <div class="methods-list">
+            <!-- PAYPAL BUTTON (simulé) -->
+            <div class="method-card active">
+              <div class="method-header">
+                <div class="method-icon">💰</div>
+                <div class="method-info">
+                  <h4>PayPal</h4>
+                  <p>Paiement rapide et sécurisé</p>
+                </div>
+                <div class="method-radio">
+                  <input type="radio" name="method" checked>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYMENT BUTTONS -->
+      <div class="payment-actions">
+        <div class="security-notice">
+          <div class="security-icon">🛡️</div>
+          <div class="security-text">
+            <strong>Paiement 100% sécurisé</strong>
+            <p>Vos informations sont cryptées et protégées</p>
+          </div>
+        </div>
+        
+        <div class="action-buttons">
+          <button class="btn-cancel" (click)="cancelPayment()" [disabled]="isProcessing">
+            Annuler
+          </button>
+          
+          <button class="btn-pay" (click)="simulatePayment()" [disabled]="isProcessing">
+            <span *ngIf="!isProcessing">
+              Payer {{ paymentDetails.amount | currency:'MAD ' }} avec PayPal
+            </span>
+            <span *ngIf="isProcessing">
+              <span class="spinner"></span>
+              Traitement en cours...
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PAYMENT SECURITY -->
+      <div class="payment-security">
+        <h4>Votre paiement est sécurisé</h4>
+        <div class="security-features">
+          <div class="feature">
+            <span class="feature-icon">🔒</span>
+            <span>Chiffrement SSL</span>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">🛡️</span>
+            <span>Protection des données</span>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">✅</span>
+            <span>Garantie de remboursement</span>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">📞</span>
+            <span>Support 24/7</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

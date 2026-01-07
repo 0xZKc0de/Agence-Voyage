@@ -129,15 +129,13 @@ export class CircuitDetailComponent implements OnInit {
 
   reserveCircuit() {
     if (this.circuit && this.participants <= this.circuit.placesRestantes) {
-      const reservationData = {
-        circuitId: this.circuit.id,
-        participants: this.participants,
-        total: this.calculateTotal()
-      };
-      
-      // Rediriger vers la réservation
-      this.router.navigate(['/client/reservations/create'], { 
-        state: reservationData 
+      this.router.navigate(['/client/reservations/create'], {
+        queryParams: {
+          circuitId: this.circuit.id,
+          participants: this.participants,
+          prix: this.circuit.prix,
+          total: this.calculateTotal()
+        }
       });
     }
   }
