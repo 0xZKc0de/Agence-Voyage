@@ -16,14 +16,17 @@ public class ClientController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateClient(@PathVariable int id, @RequestBody Client client, HttpSession session) {
-        Integer loggedUserId = (Integer) session.getAttribute("userId");
         String role = (String) session.getAttribute("role");
-        
+        Integer loggedUserId = (Integer) session.getAttribute("userId");
+
+        System.out.println("DEBUG: Role=" + role + ", LoggedID=" + loggedUserId + ", TargetID=" + id);
+
         if (role != null && (role.equals("ROLE_ADMIN") || (role.equals("ROLE_CLIENT") && loggedUserId != null && loggedUserId == id))) {
+            client.setId(id);
             return ResponseEntity.ok(clientService.updateClient(id, client));
         }
 
-        return ResponseEntity.status(403).body("You are not authorized to update this profile");
+        return ResponseEntity.status(403).body("Unauthorized: logic check failed");
     }
 
     @DeleteMapping("/delete/{id}")
