@@ -1,38 +1,35 @@
 <div class="client-container">
-  <!-- NAVBAR -->
   <nav class="client-navbar">
     <div class="nav-left">
       <a routerLink="/client/website" class="nav-logo">
-        <img src="image.png" alt="Agence Voyage">
-        <span class="logo-text">Voyages et Découvertes</span>
+        <img src="/public/image.png" alt="Agence Voyage"> <span class="logo-text">Voyages et Découvertes</span>
       </a>
     </div>
-    
+
     <div class="nav-center">
       <a routerLink="/client/website" routerLinkActive="active">Accueil</a>
       <a routerLink="/client/circuits" routerLinkActive="active">Circuits</a>
       <a routerLink="/client/reservations" routerLinkActive="active">Mes Réservations</a>
       <a routerLink="/client/profile" routerLinkActive="active">Mon Profil</a>
     </div>
-    
+
     <div class="nav-right">
       <div class="client-info" *ngIf="isLoggedIn">
         <span class="client-name">Bonjour, {{ clientName }}</span>
         <button class="btn-logout" (click)="logout()">Déconnexion</button>
       </div>
-      <div *ngIf="!isLoggedIn" class="auth-links">
+
+      <div *ngIf="!isLoggedIn && !isLoading" class="auth-links">
         <a routerLink="/auth/login" class="btn-login">Se connecter</a>
         <a routerLink="/auth/register" class="btn-register">S'inscrire</a>
       </div>
     </div>
   </nav>
 
-  <!-- MAIN CONTENT -->
   <main class="client-main">
     <router-outlet></router-outlet>
   </main>
 
-  <!-- FOOTER -->
   <footer class="client-footer">
     <div class="footer-content">
       <div class="footer-section">

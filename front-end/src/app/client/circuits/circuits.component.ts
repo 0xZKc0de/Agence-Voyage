@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+// استيراد الخدمة بدلاً من HttpClient فقط
+import { CircuitService } from '../../services/circuit.service';
 
 interface Circuit {
   id: number;
@@ -12,8 +13,8 @@ interface Circuit {
   prix: number;
   description: string;
   imageUrl: string;
-  nb_places: number; // مطابقة لاسم الحقل في Circuit.java
-  duration: number;  // مطابقة لـ getDuration() في Circuit.java
+  nb_places: number;
+  duration: number;
 }
 
 @Component({
@@ -37,10 +38,8 @@ export class CircuitsComponent implements OnInit {
   destinations: string[] = [];
   durations: string[] = ['3', '5', '7', '10'];
 
-  private apiUrl = 'http://localhost:8080/api/v1/circuits';
-
   constructor(
-    private http: HttpClient,
+    private circuitService: CircuitService, // حقن الخدمة هنا
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -48,6 +47,7 @@ export class CircuitsComponent implements OnInit {
   ngOnInit() {
     this.loadCircuitsFromApi();
 
+    // مراقبة المسارات الفرعية (مثل صفحة التفاصيل)
     this.route.url.subscribe(() => {
       this.hasActiveChild = this.route.children.length > 0;
     });
@@ -55,17 +55,20 @@ export class CircuitsComponent implements OnInit {
 
   loadCircuitsFromApi() {
     this.isLoading = true;
-    this.http.get<Circuit[]>(this.apiUrl).subscribe({
+
+    // استخدام الخدمة بدلاً من http.get المباشر
+    this.circuitService.getCircuits().subscribe({
       next: (data) => {
-        // البيانات تأتي جاهزة من الـ API بما فيها duration
         this.circuits = data;
         this.filteredCircuits = [...this.circuits];
         this.extractDestinations();
         this.isLoading = false;
+        console.log('تم تحميل الرحلات بنجاح:', data);
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des circuits:', error);
+        console.error('فشل في تحميل الرحلات. تأكد من تسجيل الدخول:', error);
         this.isLoading = false;
+        // إذا كان الخطأ 401 أو 403، يمكنك توجيه المستخدم لصفحة الدخول
       }
     });
   }
@@ -105,11 +108,12 @@ export class CircuitsComponent implements OnInit {
   }
 
   selectCircuit(circuit: Circuit) {
+    // التوجيه لصفحة تفاصيل الرحلة
     this.router.navigate(['/client/circuits', circuit.id]);
   }
 
   reserveCircuit(circuit: Circuit) {
-    console.log('Réservation du circuit vers :', circuit.distination);
-    this.router.navigate(['/client/reserver', circuit.id]);
+    // التوجيه لصفحة الحجز
+    this.router.navigate(['/client/reservations/create'], { queryParams: { circuitId: circuit.id } });
   }
 }

@@ -1,28 +1,57 @@
 import { Routes } from '@angular/router';
-import { ClientLayoutComponent } from './client-layout/client-layout.component';
-import { HomeComponent } from './website/home/home.component';
-import { ProfileComponent } from './profile/profile.component';
-import { CircuitsComponent } from './circuits/circuits.component';
-import { CircuitDetailComponent } from './circuits/circuit-detail/circuit-detail.component';
-import { ReservationListComponent } from './reservations/reservation-list/reservation-list.component';
-import { ReservationCreateComponent } from './reservations/reservation-create/reservation-create.component';
-import { PaypalPaymentComponent } from './payment/paypal-payment/paypal-payment.component';
+import { authGuard } from '../auth.guard';
 
 export const clientRoutes: Routes = [
   {
     path: '',
-    component: ClientLayoutComponent,
+    // تحميل التنسيق الرئيسي للعميل
+    loadComponent: () => import('./client-layout/client-layout.component').then(m => m.ClientLayoutComponent),
     children: [
-      // Public routes
-      { path: 'website', component: HomeComponent },
-      { path: 'circuits', component: CircuitsComponent },
-      { path: 'circuits/:id', component: CircuitDetailComponent },
-      { path: 'profile', component: ProfileComponent},
-      { path: 'reservations', component: ReservationListComponent },
-      { path: 'reservations/create', component: ReservationCreateComponent },
-      { path: 'payment/paypal', component: PaypalPaymentComponent },
-      
-      // Default redirect
+      // 1. الصفحة الرئيسية (متاحة للجميع بدون تسجيل دخول)
+      {
+        path: 'website',
+        loadComponent: () => import('./website/home/home.component').then(m => m.HomeComponent)
+      },
+
+      // 2. صفحات الرحلات (محمية بـ authGuard لضمان عدم رؤيتها إلا للمسجلين)
+      {
+        path: 'circuits',
+        canActivate: [authGuard],
+        loadComponent: () => import('./circuits/circuits.component').then(m => m.CircuitsComponent)
+      },
+      {
+        path: 'circuits/:id',
+        canActivate: [authGuard],
+        loadComponent: () => import('./circuits/circuit-detail/circuit-detail.component').then(m => m.CircuitDetailComponent)
+      },
+
+      // 3. صفحة الملف الشخصي (محمية)
+      {
+        path: 'profile',
+        canActivate: [authGuard],
+        loadComponent: () => import('./profile/profile.component').then(m => m.ProfileComponent)
+      },
+
+      // 4. صفحات الحجوزات (محمية)
+      {
+        path: 'reservations',
+        canActivate: [authGuard],
+        loadComponent: () => import('./reservations/reservation-list/reservation-list.component').then(m => m.ReservationListComponent)
+      },
+      {
+        path: 'reservations/create',
+        canActivate: [authGuard],
+        loadComponent: () => import('./reservations/reservation-create/reservation-create.component').then(m => m.ReservationCreateComponent)
+      },
+
+      // 5. صفحة الدفع (محمية)
+      {
+        path: 'payment/paypal',
+        canActivate: [authGuard],
+        loadComponent: () => import('./payment/paypal-payment/paypal-payment.component').then(m => m.PaypalPaymentComponent)
+      },
+
+      // توجيه تلقائي في حال كان الرابط فارغاً
       { path: '', redirectTo: 'website', pathMatch: 'full' }
     ]
   }

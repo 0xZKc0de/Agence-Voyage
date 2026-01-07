@@ -6,11 +6,19 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CircuitService {
-  private apiUrl = 'http://localhost:8080/api/v1/circuits'; // رابط الـ API الخاص بك
+  private apiUrl = 'http://localhost:8080/api/v1/circuits';
 
   constructor(private http: HttpClient) { }
 
+  // جلب كل الرحلات
   getCircuits(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+    // التعديل الضروري هنا: إضافة withCredentials
+    return this.http.get<any[]>(this.apiUrl, { withCredentials: true });
+  }
+
+  // جلب رحلة واحدة بالتفصيل
+  getCircuitById(id: number): Observable<any> {
+    // أضف كلمة get في الرابط
+    return this.http.get<any>(`${this.apiUrl}/get/${id}`, { withCredentials: true });
   }
 }
