@@ -1,0 +1,121 @@
+<div class="profile-page">
+  <div class="profile-header">
+    <h1>Mon Profil</h1>
+    <p>Gérez vos informations personnelles</p>
+  </div>
+
+  <div class="profile-content">
+    <!-- SUCCESS/ERROR MESSAGES -->
+    <div class="alert alert-success" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+    
+    <div class="alert alert-error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-spinner" *ngIf="isLoading">
+      Chargement du profil...
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div class="profile-card" *ngIf="client && !isLoading">
+      <div class="profile-header-actions">
+        <button class="btn-edit" (click)="toggleEdit()" *ngIf="!isEditing">
+          ✏️ Modifier le profil
+        </button>
+        <div class="edit-actions" *ngIf="isEditing">
+          <button class="btn-save" (click)="onSubmit()" [disabled]="!profileForm.valid">
+            💾 Enregistrer
+          </button>
+          <button class="btn-cancel" (click)="toggleEdit()">
+            ❌ Annuler
+          </button>
+        </div>
+      </div>
+
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <div class="profile-grid">
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" formControlName="nom" [readonly]="!isEditing" 
+                   [class.editing]="isEditing">
+            <div class="error" *ngIf="profileForm.get('nom')?.invalid && profileForm.get('nom')?.touched">
+              Nom invalide
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" formControlName="prenom" [readonly]="!isEditing"
+                   [class.editing]="isEditing">
+            <div class="error" *ngIf="profileForm.get('prenom')?.invalid && profileForm.get('prenom')?.touched">
+              Prénom invalide
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" formControlName="email" [readonly]="!isEditing"
+                   [class.editing]="isEditing">
+            <div class="error" *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
+              Email invalide
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Téléphone</label>
+            <input type="tel" formControlName="telephone" [readonly]="!isEditing"
+                   [class.editing]="isEditing">
+            <div class="error" *ngIf="profileForm.get('telephone')?.invalid && profileForm.get('telephone')?.touched">
+              Téléphone invalide (10 chiffres)
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Adresse</label>
+            <textarea formControlName="adresse" [readonly]="!isEditing"
+                      [class.editing]="isEditing" rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Date de naissance</label>
+            <input type="date" formControlName="dateNaissance" [readonly]="!isEditing"
+                   [class.editing]="isEditing">
+          </div>
+
+          <div class="form-group">
+            <label>Date d'inscription</label>
+            <input type="text" [value]="client.dateInscription | date:'dd/MM/yyyy'" readonly>
+          </div>
+        </div>
+      </form>
+
+      <!-- STATISTICS -->
+      <div class="profile-stats">
+        <div class="stat-item">
+          <span class="stat-label">Réservations</span>
+          <span class="stat-value">5</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Dernière réservation</span>
+          <span class="stat-value">15/01/2024</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Total dépensé</span>
+          <span class="stat-value">12 500 MAD</span>
+        </div>
+      </div>
+
+      <!-- DANGER ZONE -->
+      <div class="danger-zone">
+        <h3>Zone de danger</h3>
+        <p>Ces actions sont irréversibles. Soyez certain de votre choix.</p>
+        <button class="btn-delete" (click)="deleteAccount()">
+          🗑️ Supprimer mon compte
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

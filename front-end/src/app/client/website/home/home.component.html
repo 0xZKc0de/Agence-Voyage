@@ -1,0 +1,111 @@
+<div class="home-page">
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>Découvrez le Monde avec Nous</h1>
+      <p class="hero-subtitle">
+        Des voyages inoubliables, des expériences authentiques, 
+        des souvenirs qui durent toute une vie
+      </p>
+      <div class="hero-buttons">
+        <a routerLink="/client/circuits" class="btn-hero-primary">
+          Voir nos circuits
+        </a>
+        <a routerLink="/auth/register" class="btn-hero-secondary">
+          Créer un compte
+        </a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <img src="picture.jpg" alt="Voyage">
+    </div>
+  </section>
+
+  <!-- FEATURED CIRCUITS -->
+  <section class="featured-section">
+    <div class="section-header">
+      <h2>Circuits Populaires</h2>
+      <p>Nos voyages les plus appréciés par nos clients</p>
+    </div>
+    
+    <div class="circuits-grid" *ngIf="!isLoading">
+      <div class="circuit-card" *ngFor="let circuit of featuredCircuits">
+        <div class="circuit-image">
+          <img [src]="circuit.imageUrl" [alt]="circuit.nom">
+          <div class="circuit-price">
+            {{ circuit.prix | currency:'MAD ' }}
+          </div>
+        </div>
+        <div class="circuit-info">
+          <h3>{{ circuit.nom }}</h3>
+          <p class="circuit-destination">📍 {{ circuit.destination }}</p>
+          <p class="circuit-description">{{ circuit.description }}</p>
+          <div class="circuit-details">
+            <span class="circuit-duration">⏱️ {{ circuit.duree }} jours</span>
+            <span class="circuit-places" 
+                  [class.low]="circuit.placesRestantes <= 3">
+              🏷️ {{ circuit.placesRestantes }} places
+            </span>
+          </div>
+          <button class="btn-circuit-details" 
+                  [routerLink]="['/client/circuits', circuit.id]">
+            Voir détails
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="loading-spinner" *ngIf="isLoading">
+      Chargement des circuits...
+    </div>
+  </section>
+
+  <!-- WHY CHOOSE US -->
+  <section class="why-us-section">
+    <div class="section-header">
+      <h2>Pourquoi Nous Choisir ?</h2>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">✓</div>
+        <h3>Meilleurs Prix</h3>
+        <p>Garantie du meilleur prix pour tous nos circuits</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🏨</div>
+        <h3>Hébergement Premium</h3>
+        <p>Hôtels 4* et riads authentiques sélectionnés avec soin</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">👨‍✈️</div>
+        <h3>Guides Experts</h3>
+        <p>Guides francophones passionnés et expérimentés</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Réservation Sécurisée</h3>
+        <p>Paiement 100% sécurisé avec PayPal</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA SECTION -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>Prêt pour l'aventure ?</h2>
+      <p>Inscrivez-vous et Bénéficiez de 10% de réduction sur votre première réservation ! Profitez-en dès maintenant pour vivre une aventure inoubliable tout en économisant !</p>
+      <div class="cta-buttons">
+        <a routerLink="/client/circuits" class="btn-cta-secondary">
+          Explorer les Circuits
+        </a>
+         <a routerLink="/auth/circuits" class="btn-cta-secondary">
+          S'inscrire Maintenant
+        </a>
+      </div>
+    </div>
+  </section>
+</div>

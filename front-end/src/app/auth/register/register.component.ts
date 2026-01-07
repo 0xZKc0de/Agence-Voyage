@@ -50,13 +50,13 @@ export class ClientRegisterComponent {
         this.successMessage = 'Compte créé avec succès ✔️';
 
         setTimeout(() => {
-          this.router.navigate(['/client/login']);
+          this.router.navigate(['/auth/login']);
         }, 1500);
       }, 1000);
     }
   }
 
   allerVersLogin() {
-    this.router.navigate(['/client/login']);
+    this.router.navigate(['/auth/login']);
   }
 }

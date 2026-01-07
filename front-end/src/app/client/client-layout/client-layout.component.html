@@ -1,0 +1,60 @@
+<div class="client-container">
+  <!-- NAVBAR -->
+  <nav class="client-navbar">
+    <div class="nav-left">
+      <a routerLink="/client/website" class="nav-logo">
+        <img src="image.png" alt="Agence Voyage">
+        <span class="logo-text">Voyages et Découvertes</span>
+      </a>
+    </div>
+    
+    <div class="nav-center">
+      <a routerLink="/client/website" routerLinkActive="active">Accueil</a>
+      <a routerLink="/client/circuits" routerLinkActive="active">Circuits</a>
+      <a routerLink="/client/reservations" routerLinkActive="active">Mes Réservations</a>
+      <a routerLink="/client/profile" routerLinkActive="active">Mon Profil</a>
+    </div>
+    
+    <div class="nav-right">
+      <div class="client-info" *ngIf="isLoggedIn">
+        <span class="client-name">Bonjour, {{ clientName }}</span>
+        <button class="btn-logout" (click)="logout()">Déconnexion</button>
+      </div>
+      <div *ngIf="!isLoggedIn">
+        <a routerLink="/client/auth/login" class="btn-login">Se connecter</a>
+        <a routerLink="/client/auth/register" class="btn-register">S'inscrire</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="client-main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="client-footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Agence de Voyages</h4>
+        <p>Découvrez le monde avec nos circuits exclusifs</p>
+      </div>
+      <div class="footer-section">
+        <h4>Contact</h4>
+        <p>contact@voyagesdecouvertes.com</p>
+        <p>+212 5 00 00 00 00</p>
+      </div>
+      <div class="footer-section">
+        <h4>Suivez-nous</h4>
+        <div class="social-links">
+          <a href="#">Facebook</a>
+          <a href="#">Instagram</a>
+          <a href="#">Twitter</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 Agence de Voyages. Tous droits réservés.</p>
+    </div>
+  </footer>
+</div>

@@ -24,11 +24,11 @@ export class ClientLoginComponent {
 
   seConnecter() {
     if (this.loginForm.valid) {
-      this.router.navigate(['/client/dashboard']);
+      this.router.navigate(['/client/website']);
     }
   }
 
   allerVersInscription() {
-    this.router.navigate(['/client/register']);
+    this.router.navigate(['/auth/register']);
   }
 }

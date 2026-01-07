@@ -1,0 +1,127 @@
+<div class="circuit-detail">
+  <!-- CLOSE BUTTON -->
+  <button class="btn-close-detail" (click)="closeDetail()">
+    ✕
+  </button>
+  
+  <!-- LOADING -->
+  <div class="loading-spinner" *ngIf="isLoading">
+    Chargement des détails...
+  </div>
+  
+  <!-- CIRCUIT DETAILS -->
+  <div class="circuit-detail-content" *ngIf="circuit && !isLoading">
+    <!-- IMAGE -->
+    <div class="circuit-detail-image">
+      <img [src]="circuit.imageUrl" [alt]="circuit.nom">
+    </div>
+    
+    <!-- HEADER -->
+    <div class="circuit-detail-header">
+      <h2>{{ circuit.nom }}</h2>
+      <div class="circuit-header-meta">
+        <span class="circuit-location">📍 {{ circuit.destination }}</span>
+        <span class="circuit-duration">⏱️ {{ circuit.duree }} jours</span>
+        <span class="circuit-price">💰 {{ circuit.prix | currency:'MAD ' }}</span>
+      </div>
+    </div>
+    
+    <!-- DESCRIPTION -->
+    <div class="circuit-section">
+      <h3>Description</h3>
+      <p class="circuit-description">{{ circuit.description }}</p>
+    </div>
+    
+    <!-- KEY INFO -->
+    <div class="circuit-key-info">
+      <div class="info-item">
+        <span class="info-label">Date de départ</span>
+        <span class="info-value">{{ circuit.dateDepart | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Places disponibles</span>
+        <span class="info-value" [class.low]="circuit.placesRestantes <= 3">
+          {{ circuit.placesRestantes }} / {{ circuit.placesTotal }}
+        </span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Statut</span>
+        <span class="info-value status" [class.active]="circuit.active">
+          {{ circuit.active ? 'Disponible' : 'Complet' }}
+        </span>
+      </div>
+    </div>
+    
+    <!-- PROGRAMME -->
+    <div class="circuit-section" *ngIf="circuit.programme.length > 0">
+      <h3>Programme détaillé</h3>
+      <ul class="programme-list">
+        <li *ngFor="let jour of circuit.programme">{{ jour }}</li>
+      </ul>
+    </div>
+    
+    <!-- INCLUS/NON INCLUS -->
+    <div class="circuit-inclusions">
+      <div class="inclusion-column">
+        <h4>✔️ Inclus dans le prix</h4>
+        <ul>
+          <li *ngFor="let item of circuit.inclus">{{ item }}</li>
+        </ul>
+      </div>
+      <div class="inclusion-column">
+        <h4>❌ Non inclus</h4>
+        <ul>
+          <li *ngFor="let item of circuit.nonInclus">{{ item }}</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- RESERVATION FORM -->
+    <div class="reservation-section" *ngIf="showReservationForm">
+      <h3>Réserver ce circuit</h3>
+      <div class="reservation-form">
+        <div class="form-group">
+          <label>Nombre de participants</label>
+          <div class="participants-control">
+            <button class="btn-control" (click)="decrementParticipants()" 
+                    [disabled]="participants <= 1">-</button>
+            <span class="participants-count">{{ participants }}</span>
+            <button class="btn-control" (click)="incrementParticipants()"
+                    [disabled]="participants >= (circuit.placesRestantes || 1)">+</button>
+          </div>
+        </div>
+        
+        <div class="price-summary">
+          <div class="price-item">
+            <span>Prix unitaire:</span>
+            <span>{{ circuit.prix | currency:'MAD ' }}</span>
+          </div>
+          <div class="price-item">
+            <span>Participants:</span>
+            <span>x {{ participants }}</span>
+          </div>
+          <div class="price-item total">
+            <span>Total:</span>
+            <span>{{ calculateTotal() | currency:'MAD ' }}</span>
+          </div>
+        </div>
+        
+        <button class="btn-reserve-full" (click)="reserveCircuit()"
+                [disabled]="participants > circuit.placesRestantes">
+          Procéder à la réservation
+        </button>
+      </div>
+    </div>
+    
+    <!-- ACTION BUTTONS -->
+    <div class="action-buttons">
+      <button class="btn-reserve" (click)="toggleReservationForm()"
+              [disabled]="!circuit.active || circuit.placesRestantes === 0">
+        {{ showReservationForm ? 'Masquer' : 'Réserver maintenant' }}
+      </button>
+      <button class="btn-back" (click)="closeDetail()">
+        Retour à la liste
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,147 @@
+<div class="circuits-page" [class.sidebar-active]="hasActiveChild">
+  <!-- HEADER -->
+  <div class="circuits-header">
+    <h2 class="circuits-title">Nos Circuits</h2>
+    
+    <div class="circuits-header-actions">
+      <input
+        type="text"
+        placeholder="Rechercher un circuit..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="filterTrips()"
+        class="search-input"
+      />
+      
+      <div class="filter-options">
+        <select 
+          class="filter-select"
+          [(ngModel)]="selectedDestination"
+          (ngModelChange)="filterTrips()"
+        >
+          <option value="">Toutes destinations</option>
+          <option *ngFor="let destination of destinations" [value]="destination">
+            {{ destination }}
+          </option>
+        </select>
+        
+        <select 
+          class="filter-select"
+          [(ngModel)]="selectedDuration"
+          (ngModelChange)="filterTrips()"
+        >
+          <option value="">Toutes durées</option>
+          <option *ngFor="let duration of durations" [value]="duration">
+            {{ duration }} jours{{ duration === '7' ? ' et plus' : '' }}
+          </option>
+        </select>
+
+        <button 
+          class="btn-clear-filters" 
+          (click)="clearFilters()"
+          *ngIf="selectedDestination || selectedDuration || searchTerm"
+        >
+          Effacer les filtres
+        </button>
+      </div>
+    </div>
+
+    <!-- FILTERS SUMMARY -->
+    <div class="filters-summary" *ngIf="selectedDestination || selectedDuration || searchTerm">
+      <span>Filtres actifs :</span>
+      <span class="filter-tag" *ngIf="selectedDestination">
+        Destination: {{ selectedDestination }}
+        <button (click)="selectedDestination = ''; filterTrips()">×</button>
+      </span>
+      <span class="filter-tag" *ngIf="selectedDuration">
+        Durée: {{ selectedDuration }} jours{{ selectedDuration === '7+' ? ' et plus' : '' }}
+        <button (click)="selectedDuration = ''; filterTrips()">×</button>
+      </span>
+      <span class="filter-tag" *ngIf="searchTerm">
+        Recherche: "{{ searchTerm }}"
+        <button (click)="searchTerm = ''; filterTrips()">×</button>
+      </span>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="circuits-main-area">
+    <!-- CIRCUITS GRID -->
+    <div class="circuits-grid-section">
+      <!-- LOADING -->
+      <div class="loading-spinner" *ngIf="isLoading">
+        Chargement des circuits...
+      </div>
+      
+      <!-- RESULTS COUNT -->
+      <div class="results-count" *ngIf="!isLoading">
+        {{ filteredCircuits.length }} circuit{{ filteredCircuits.length > 1 ? 's' : '' }} trouvé{{ filteredCircuits.length > 1 ? 's' : '' }}
+      </div>
+      
+      <!-- CIRCUITS LIST -->
+      <div class="circuits-grid" *ngIf="!isLoading && filteredCircuits.length > 0">
+        <div
+          class="circuit-card"
+          *ngFor="let circuit of filteredCircuits"
+          (click)="selectCircuit(circuit)"
+          [class.low-availability]="circuit.placesRestantes <= 3"
+        >
+          <div class="circuit-image">
+            <!-- CHEMIN DIRECT car images dans public/ -->
+            <img [src]="circuit.imageUrl" [alt]="circuit.nom">
+            <div class="circuit-price">
+              {{ circuit.prix | currency:'MAD ' }}
+            </div>
+            <div class="circuit-badge" *ngIf="circuit.placesRestantes <= 3">
+              ⚠️ Plus que {{ circuit.placesRestantes }} places
+            </div>
+          </div>
+          
+          <div class="circuit-content">
+            <h3 class="circuit-name">{{ circuit.nom }}</h3>
+            
+            <div class="circuit-meta">
+              <span class="circuit-destination">📍 {{ circuit.destination }}</span>
+              <span class="circuit-duration">⏱️ {{ circuit.duree }} jours</span>
+            </div>
+            
+            <p class="circuit-description">{{ circuit.description }}</p>
+            
+            <div class="circuit-details">
+              <div class="circuit-date">
+                🗓️ {{ circuit.dateDepart | date:'dd/MM/yyyy' }}
+              </div>
+              <div class="circuit-places">
+                🏷️ {{ circuit.placesRestantes }} / {{ circuit.placesTotal }} places
+              </div>
+            </div>
+            
+            <div class="circuit-actions">
+              <button class="btn-details" (click)="selectCircuit(circuit); $event.stopPropagation()">
+                Voir détails
+              </button>
+              <button class="btn-reserve" 
+                      (click)="reserveCircuit(circuit); $event.stopPropagation()"
+                      [disabled]="circuit.placesRestantes === 0">
+                Réserver
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- NO RESULTS -->
+      <div class="no-circuits" *ngIf="!isLoading && filteredCircuits.length === 0">
+        <div class="no-circuits-content">
+          <div class="no-circuits-icon">🌍</div>
+          <h3>Aucun circuit trouvé</h3>
+          <p>Essayez avec d'autres critères de recherche</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- SIDEBAR FOR DETAILS -->
+    <div class="circuits-sidebar-outlet" *ngIf="hasActiveChild">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
