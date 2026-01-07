@@ -6,16 +6,14 @@ import { HttpClient } from '@angular/common/http';
 
 interface Circuit {
   id: number;
-  nom: string;
-  destination: string;
-  description: string;
-  prix: number;
-  duree: number;
+  distination: string;
   dateDepart: string;
-  placesTotal: number;
-  placesRestantes: number;
+  dateArrive: string;
+  prix: number;
+  description: string;
   imageUrl: string;
-  active: boolean;
+  nb_places: number; // مطابقة لاسم الحقل في Circuit.java
+  duration: number;  // مطابقة لـ getDuration() في Circuit.java
 }
 
 @Component({
@@ -28,15 +26,18 @@ interface Circuit {
 export class CircuitsComponent implements OnInit {
   circuits: Circuit[] = [];
   filteredCircuits: Circuit[] = [];
-  searchTerm: string = '';
-  selectedDestination: string = '';
-  selectedDuration: string = '';
+
   isLoading = true;
   hasActiveChild = false;
 
-  // Options pour les filtres
-  destinations: string[] = ['Marrakech', 'Merzouga', 'Essaouira', 'Toubkal'];
-  durations: string[] = ['3', '5', '7'];
+  searchTerm: string = '';
+  selectedDestination: string = '';
+  selectedDuration: string = '';
+
+  destinations: string[] = [];
+  durations: string[] = ['3', '5', '7', '10'];
+
+  private apiUrl = 'http://localhost:8080/api/v1/circuits';
 
   constructor(
     private http: HttpClient,
@@ -45,146 +46,70 @@ export class CircuitsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadCircuits();
-    
-    // Vérifier si on a un enfant actif (détail)
-    this.route.children.length > 0 ? this.hasActiveChild = true : this.hasActiveChild = false;
+    this.loadCircuitsFromApi();
+
+    this.route.url.subscribe(() => {
+      this.hasActiveChild = this.route.children.length > 0;
+    });
   }
 
-  loadCircuits() {
+  loadCircuitsFromApi() {
     this.isLoading = true;
-    // À remplacer par l'appel API réel
-    // this.http.get('/api/circuits').subscribe({
-    //   next: (data: any) => {
-    //     this.circuits = data;
-    //     this.filteredCircuits = data;
-    //     this.isLoading = false;
-    //   },
-    //   error: (error) => {
-    //     console.error('Erreur chargement circuits:', error);
-    //     this.isLoading = false;
-    //   }
-    // });
+    this.http.get<Circuit[]>(this.apiUrl).subscribe({
+      next: (data) => {
+        // البيانات تأتي جاهزة من الـ API بما فيها duration
+        this.circuits = data;
+        this.filteredCircuits = [...this.circuits];
+        this.extractDestinations();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des circuits:', error);
+        this.isLoading = false;
+      }
+    });
+  }
 
-    // Données mockées
-    setTimeout(() => {
-      this.circuits = [
-        {
-          id: 1,
-          nom: 'Marrakech Impériale',
-          destination: 'Marrakech',
-          description: 'Découvrez la ville ocre et ses trésors',
-          prix: 2999,
-          duree: 7,
-          dateDepart: '2024-03-15',
-          placesTotal: 15,
-          placesRestantes: 8,
-          imageUrl: 'image1.webp',
-          active: true
-        },
-        {
-          id: 2,
-          nom: 'Sahara Aventure',
-          destination: 'Merzouga',
-          description: 'Nuit en bivouac dans le désert',
-          prix: 1899,
-          duree: 4,
-          dateDepart: '2024-04-10',
-          placesTotal: 10,
-          placesRestantes: 5,
-          imageUrl: 'image2.jpg',
-          active: true
-        },
-        {
-          id: 3,
-          nom: 'Côte Atlantique',
-          destination: 'Essaouira',
-          description: 'Détente au bord de l\'océan',
-          prix: 1599,
-          duree: 5,
-          dateDepart: '2024-05-20',
-          placesTotal: 20,
-          placesRestantes: 12,
-          imageUrl: 'image3.jpg',
-          active: true
-        },
-        {
-          id: 4,
-          nom: 'Montagnes de l\'Atlas',
-          destination: 'Toubkal',
-          description: 'Randonnée au plus haut sommet d\'Afrique du Nord',
-          prix: 2499,
-          duree: 6,
-          dateDepart: '2024-06-05',
-          placesTotal: 12,
-          placesRestantes: 3,
-          imageUrl: 'image4.jpg',
-          active: true
-        }
-      ];
-      this.filteredCircuits = this.circuits;
-      this.isLoading = false;
-    }, 500);
+  extractDestinations() {
+    const uniqueDestinations = new Set(this.circuits.map(c => c.distination));
+    this.destinations = Array.from(uniqueDestinations).sort();
   }
 
   filterTrips() {
-    let filtered = this.circuits;
+    this.filteredCircuits = this.circuits.filter(circuit => {
+      const matchesSearch = !this.searchTerm ||
+        (circuit.distination?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          circuit.description?.toLowerCase().includes(this.searchTerm.toLowerCase()));
 
-    // Filtre par recherche texte
-    if (this.searchTerm.trim()) {
-      const search = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(circuit =>
-        circuit.nom.toLowerCase().includes(search) ||
-        circuit.destination.toLowerCase().includes(search) ||
-        circuit.description.toLowerCase().includes(search)
-      );
-    }
+      const matchesDest = !this.selectedDestination ||
+        circuit.distination === this.selectedDestination;
 
-    // Filtre par destination
-    if (this.selectedDestination) {
-      filtered = filtered.filter(circuit => 
-        circuit.destination === this.selectedDestination
-      );
-    }
+      const matchesDuration = !this.selectedDuration ||
+        this.checkDuration(circuit.duration, this.selectedDuration);
 
-    // Filtre par durée
-    if (this.selectedDuration) {
-      if (this.selectedDuration === '7+') {
-        filtered = filtered.filter(circuit => circuit.duree >= 7);
-      } else {
-        const duration = parseInt(this.selectedDuration);
-        filtered = filtered.filter(circuit => circuit.duree === duration);
-      }
-    }
+      return matchesSearch && matchesDest && matchesDuration;
+    });
+  }
 
-    this.filteredCircuits = filtered;
+  private checkDuration(actual: number | undefined, selected: string): boolean {
+    if (actual === undefined) return false;
+    const dur = parseInt(selected);
+    return selected === '7' ? actual >= 7 : actual === dur;
   }
 
   clearFilters() {
     this.searchTerm = '';
     this.selectedDestination = '';
     this.selectedDuration = '';
-    this.filterTrips();
+    this.filteredCircuits = [...this.circuits];
   }
 
   selectCircuit(circuit: Circuit) {
     this.router.navigate(['/client/circuits', circuit.id]);
-    this.hasActiveChild = true;
-  }
-
-  closeDetail() {
-    this.hasActiveChild = false;
-    this.router.navigate(['/client/circuits']);
   }
 
   reserveCircuit(circuit: Circuit) {
-    console.log('Réservation du circuit:', circuit.nom);
-    this.router.navigate(['/client/reservations/create'], {
-      queryParams: {
-        circuitId: circuit.id,
-        participants: 1,
-        prix: circuit.prix
-      }
-    });
+    console.log('Réservation du circuit vers :', circuit.distination);
+    this.router.navigate(['/client/reserver', circuit.id]);
   }
 }
