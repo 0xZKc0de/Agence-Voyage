@@ -1,0 +1,35 @@
+<div class="admin-container">
+
+  <!-- SIDEBAR (STATIC) -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="image.png" alt="Logo Agence Voyage" class="sidebar-logo">
+      <h2>Admin</h2>
+    </div>
+
+    <ul>
+      <li><a routerLink="dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="icon-dashboard">Tableau de bord</a></li>
+      <li><a routerLink="clients" routerLinkActive="active" class="icon-clients">Clients</a></li>
+      <li><a routerLink="reservations" routerLinkActive="active" class="icon-reservations">Réservations</a></li>
+      <li><a routerLink="trips" routerLinkActive="active" class="icon-trips">Circuits</a></li>
+
+    </ul>
+
+    <!-- Logout at bottom -->
+    <div class="logout-container">
+      <a class="icon-logout">
+        <img src="logout.png" alt="Déconnexion" class="logout-img">
+        Déconnexion
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <section class="content">
+      <router-outlet></router-outlet>
+    </section>
+  </div>
+
+</div>

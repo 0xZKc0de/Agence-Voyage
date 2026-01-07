@@ -1,0 +1,30 @@
+// admin.routes.ts
+import { Routes } from '@angular/router';
+import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { ClientsComponent } from './clients/clients.component';
+import { ReservationsComponent } from './reservations/reservations.component';
+import { TripsComponent } from './trips/trips.component';
+import { TripDetailComponent } from './trips/trip-detail/trip-detail.component';
+import { TripFormComponent } from './trips/trip-form/trip-form.component';
+
+export const adminRoutes: Routes = [
+  {
+    path: '',
+    component: AdminLayoutComponent,
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'clients', component: ClientsComponent },
+      { path: 'reservations', component: ReservationsComponent },
+      { 
+        path: 'trips', 
+        component: TripsComponent,
+        children: [
+          { path: 'new', component: TripFormComponent },
+          { path: ':id', component: TripDetailComponent }
+        ]
+      }
+    ]
+  }
+];
