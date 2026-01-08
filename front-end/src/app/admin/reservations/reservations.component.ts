@@ -5,7 +5,6 @@ import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ReservationService } from '../../services/reservation.service';
 
-
 @Component({
   selector: 'app-reservations',
   standalone: true,
