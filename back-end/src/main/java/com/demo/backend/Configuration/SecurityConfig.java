@@ -24,21 +24,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/circuits/**").permitAll()
 
-                        .requestMatchers("/api/v1/circuits/add/**").permitAll()
-                        .requestMatchers("/api/v1/circuits/update/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/v1/circuits/delete/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/circuits/destinations").permitAll()
 
-                        .requestMatchers("/api/reservations/**").hasAnyAuthority("ROLE_CLIENT", "ROLE_ADMIN")
-
-                        .requestMatchers("/api/clients/update/**").hasAnyAuthority("ROLE_CLIENT", "ROLE_ADMIN")
+                        .requestMatchers("/api/reservations/count").permitAll()
                         .requestMatchers("/api/clients/count").permitAll()
-                        .requestMatchers("/api/reservations/**").permitAll()
+                        
+                        .requestMatchers("/images/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -54,7 +54,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
-        configuration.setAllowCredentials(true); // هذا السطر هو الأهم للـ JSESSIONID
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
