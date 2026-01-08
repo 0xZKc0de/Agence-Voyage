@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -81,6 +82,16 @@ public class ClientController {
     @GetMapping("/count")
     public ResponseEntity<Long> getClientsCount() {
         return ResponseEntity.ok(clientService.getClientsCount());
+    }
+
+    @GetMapping("/top")
+    public ResponseEntity<List<Client>> getTopClients(@RequestParam(defaultValue = "5") int limit) {
+        try {
+            List<Client> topClients = clientService.getTopClients(limit);
+            return ResponseEntity.ok(topClients);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
     }
 
 }

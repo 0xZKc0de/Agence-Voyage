@@ -34,11 +34,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/circuits/update/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/circuits/delete/**").hasAuthority("ROLE_ADMIN")
 
-                        .requestMatchers("/api/reservations/**").hasAnyAuthority("ROLE_CLIENT", "ROLE_ADMIN")
-
                         .requestMatchers("/api/clients/update/**").hasAnyAuthority("ROLE_CLIENT", "ROLE_ADMIN")
                         .requestMatchers("/api/clients/count").permitAll()
                         .requestMatchers("/api/reservations/**").permitAll()
+                        .requestMatchers("/api/reservations/count").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

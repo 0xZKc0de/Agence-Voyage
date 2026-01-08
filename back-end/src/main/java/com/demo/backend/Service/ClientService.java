@@ -5,9 +5,11 @@ import com.demo.backend.Entity.Client;
 import com.demo.backend.Repository.AdminRepository;
 import com.demo.backend.Repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -80,4 +82,9 @@ public class ClientService {
     public long getClientsCount() {
         return clientRepository.count();
     }
+
+    public List<Client> getTopClients(int limit) {
+        return clientRepository.findTopClients(PageRequest.of(0, limit));
+    }
+
 }
