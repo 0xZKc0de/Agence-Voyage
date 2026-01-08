@@ -21,8 +21,9 @@ export const adminRoutes: Routes = [
         path: 'trips', 
         component: TripsComponent,
         children: [
-          { path: 'new', component: TripFormComponent },
-          { path: ':id', component: TripDetailComponent }
+          { path: 'new', component: TripFormComponent },        // create new
+          { path: 'edit/:id', component: TripFormComponent },   // edit existing
+          { path: ':id', component: TripDetailComponent }      // view details
         ]
       }
     ]

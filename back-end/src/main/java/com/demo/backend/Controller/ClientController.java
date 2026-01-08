@@ -78,4 +78,9 @@ public class ClientController {
 
         return ResponseEntity.status(403).body("Accès refusé : Vous n'êtes pas autorisé à supprimer ce compte.");
     }
+    @GetMapping("/count")
+    public ResponseEntity<Long> getClientsCount() {
+        return ResponseEntity.ok(clientService.getClientsCount());
+    }
+
 }

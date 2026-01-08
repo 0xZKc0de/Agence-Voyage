@@ -109,10 +109,11 @@ export class TripDetailComponent implements OnInit {
   }
 
   editTrip(): void {
-    if (this.trip) {
-      this.router.navigate(['/admin/trips/edit', this.trip.id]);
-    }
+  if (this.trip) {
+    this.router.navigate(['/admin/trips/edit', this.trip.id]);
   }
+}
+
 
   deleteTrip(): void {
     if (this.trip && confirm(`Êtes-vous sûr de vouloir supprimer le circuit "${this.trip.nom}" ?`)) {

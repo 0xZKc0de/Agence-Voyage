@@ -77,4 +77,7 @@ public class ClientService {
     public Optional<Client> findById(Integer loggedUserId) {
         return clientRepository.findById(loggedUserId);
     }
+    public long getClientsCount() {
+        return clientRepository.count();
+    }
 }

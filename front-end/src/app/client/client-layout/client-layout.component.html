@@ -2,7 +2,7 @@
   <nav class="client-navbar">
     <div class="nav-left">
       <a routerLink="/client/website" class="nav-logo">
-        <img src="/public/image.png" alt="Agence Voyage"> <span class="logo-text">Voyages et Découvertes</span>
+        <img src="image.png" alt="Agence Voyage"> <span class="logo-text">Voyages et Découvertes</span>
       </a>
     </div>
 
@@ -14,15 +14,16 @@
     </div>
 
     <div class="nav-right">
-      <div class="client-info" *ngIf="isLoggedIn">
-        <span class="client-name">Bonjour, {{ clientName }}</span>
-        <button class="btn-logout" (click)="logout()">Déconnexion</button>
+      <div class="client-info" *ngIf="estConnecte">
+        <span class="client-name">Bonjour, {{ nomClient }}</span>
+        <button class="btn-logout" (click)="deconnexion()">Déconnexion</button>
       </div>
 
-      <div *ngIf="!isLoggedIn && !isLoading" class="auth-links">
+      <div *ngIf="!estConnecte && !chargementEnCours" class="auth-links">
         <a routerLink="/auth/login" class="btn-login">Se connecter</a>
         <a routerLink="/auth/register" class="btn-register">S'inscrire</a>
       </div>
+
     </div>
   </nav>
 

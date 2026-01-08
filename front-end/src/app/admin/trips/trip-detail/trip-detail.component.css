@@ -159,3 +159,13 @@
   cursor: pointer;
   font-size: 14px;
 }
+
+.btn-cancel {
+  flex: 1;
+  background: #f3efe6;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}

@@ -75,7 +75,7 @@
             placeholder="••••••••"
             [class.error]="registerForm.get('motDePasse')?.invalid && registerForm.get('motDePasse')?.touched">
           <div *ngIf="registerForm.get('motDePasse')?.invalid && registerForm.get('motDePasse')?.touched" class="error-message">
-            <span *ngStatus="registerForm.get('motDePasse')?.errors?.['required']">Mot de passe requis</span>
+            <span *ngIf="registerForm.get('motDePasse')?.errors?.['required']">Mot de passe requis</span>
             <span *ngIf="registerForm.get('motDePasse')?.errors?.['minlength']">Minimum 8 caractères</span>
           </div>
         </div>

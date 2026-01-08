@@ -46,4 +46,8 @@ export class AuthService {
         tap(() => this.currentUserSubject.next(null))
       );
   }
+  register(data: any) {
+    return this.http.post('http://localhost:8080/api/auth/register', data);
+  }
+
 }

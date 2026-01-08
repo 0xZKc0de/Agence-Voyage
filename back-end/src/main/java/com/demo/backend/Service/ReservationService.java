@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -85,4 +86,12 @@ public class ReservationService {
 
         return reservationRepository.save(res);
     }
+    public List<Reservation> getAllReservations() {
+        return reservationRepository.findAll();
+    }
+
+    public long getReservationsCount() {
+        return reservationRepository.count();
+    }
+
 }

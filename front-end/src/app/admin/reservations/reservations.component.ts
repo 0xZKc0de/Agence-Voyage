@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ReservationService } from '../../services/reservation.service';
 
 @Component({
   selector: 'app-reservations',
@@ -9,43 +10,48 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './reservations.component.html',
   styleUrls: ['./reservations.component.css']
 })
-export class ReservationsComponent {
+export class ReservationsComponent implements OnInit {
 
   searchTerm = '';
+  reservations: any[] = [];
 
-  reservations = [
-    {
-      id: 1,
-      date: '2026-01-15',
-      personnes: 3,
-      client: 'Ahmed Benali',
-      circuit: 'Circuit du Désert',
-      statut: 'Confirmée'
-    },
-    {
-      id: 2,
-      date: '2026-02-02',
-      personnes: 2,
-      client: 'Sarah Amrani',
-      circuit: 'Circuit Atlas',
-      statut: 'En attente'
-    },
-    {
-      id: 3,
-      date: '2026-03-10',
-      personnes: 5,
-      client: 'Youssef El Idrissi',
-      circuit: 'Circuit Nord',
-      statut: 'Annulée'
+  constructor(private reservationService: ReservationService) {}
+
+  ngOnInit(): void {
+    this.loadReservations();
+  }
+
+  loadReservations() {
+    this.reservationService.getAllReservations().subscribe({
+      next: (data) => {
+        this.reservations = data.map(r => ({
+          id: r.id,
+          date: r.dateReservation,
+          personnes: r.nbPersons,
+          client: r.client.firstName + ' ' + r.client.lastName,
+          circuit: r.circuit.name,
+          statut: this.mapStatus(r.status)
+        }));
+      },
+      error: (err) => {
+        console.error('Error loading reservations', err);
+      }
+    });
+  }
+
+  mapStatus(status: string): string {
+    switch (status) {
+      case 'PENDING': return 'En attente';
+      case 'CANCELLED': return 'Annulée';
+      case 'PAID': return 'Confirmée';
+      default: return status;
     }
-  ];
+  }
 
   get filteredReservations() {
     const term = this.searchTerm.toLowerCase().trim();
 
-    if (!term) {
-      return this.reservations;
-    }
+    if (!term) return this.reservations;
 
     return this.reservations.filter(r =>
       r.id.toString().includes(term) ||

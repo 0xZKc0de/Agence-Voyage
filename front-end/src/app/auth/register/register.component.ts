@@ -54,17 +54,18 @@ export class ClientRegisterComponent {
       };
 
       this.authService.register(registrationData).subscribe({
-        next: (response) => {
+        next: (response: any) => {
           this.isLoading = false;
           this.successMessage = 'Compte créé avec succès !';
           setTimeout(() => this.router.navigate(['/auth/login']), 1500);
         },
-        error: (err) => {
+        error: (err: any) => {
           this.isLoading = false;
           // هنا سيعرض لك السيرفر السبب الحقيقي (إما تكرار الإيميل أو تكرار الهاتف)
           this.errorMessage = err.error;
-          console.log("Error from server: ", err.error);
+          console.log('Error from server:', err.error);
         }
+
       });
     }
   }
