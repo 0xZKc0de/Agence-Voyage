@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+// استيراد الخدمة ضروري جداً
+import { ReservationService } from '../../../services/reservation.service';
 
 interface Reservation {
   id: number;
@@ -39,7 +40,7 @@ export class ReservationListComponent implements OnInit {
   totalSpent = 0;
 
   constructor(
-    private http: HttpClient,
+    private reservationService: ReservationService, // ✅ تم حقن الخدمة هنا
     private router: Router
   ) {}
 
@@ -49,75 +50,43 @@ export class ReservationListComponent implements OnInit {
 
   loadReservations() {
     this.isLoading = true;
-    setTimeout(() => {
-      this.reservations = [
-        {
-          id: 1,
-          dateReservation: '2024-01-15',
-          dateDepart: '2024-03-15',
-          participants: 2,
-          clientNom: 'Mariam Chairi',
-          clientEmail: 'mariam.chairi@email.com',
-          circuitNom: 'Marrakech Impériale',
-          circuitDestination: 'Marrakech',
-          prixTotal: 5998,
-          statut: 'CONFIRMEE',
-          paiementStatut: 'PAYE'
-        },
-        {
-          id: 2,
-          dateReservation: '2024-01-20',
-          dateDepart: '2024-04-10',
-          participants: 1,
-          clientNom: 'Mariam Chairi',
-          clientEmail: 'mariam.chairi@email.com',
-          circuitNom: 'Sahara Aventure',
-          circuitDestination: 'Merzouga',
-          prixTotal: 1899,
-          statut: 'EN_ATTENTE',
-          paiementStatut: 'EN_ATTENTE'
-        },
-        {
-          id: 3,
-          dateReservation: '2024-01-25',
-          dateDepart: '2024-05-20',
-          participants: 4,
-          clientNom: 'Mariam Chairi',
-          clientEmail: 'mariam.chairi@email.com',
-          circuitNom: 'Côte Atlantique',
-          circuitDestination: 'Essaouira',
-          prixTotal: 6396,
-          statut: 'CONFIRMEE',
-          paiementStatut: 'PAYE'
-        },
-        {
-          id: 4,
-          dateReservation: '2024-02-01',
-          dateDepart: '2024-06-05',
-          participants: 3,
-          clientNom: 'Mariam Chairi',
-          clientEmail: 'mariam.chairi@email.com',
-          circuitNom: 'Montagnes de l\'Atlas',
-          circuitDestination: 'Toubkal',
-          prixTotal: 7497,
-          statut: 'ANNULEE',
-          paiementStatut: 'REFUSE'
-        }
-      ];
-      this.filteredReservations = this.reservations;
-      this.isLoading = false;
-      
-      this.calculateStats();
-    }, 800);
+
+    // ✅ استخدام الدالة الجديدة التي تجلب حجوزات العميل الحالي فقط
+    this.reservationService.getMyReservations().subscribe({
+      next: (data: any[]) => {
+        // تحويل البيانات القادمة من الباك إند لتناسب الواجهة
+        this.reservations = data.map(res => ({
+          ...res,
+          // التأكد من وجود البيانات الفرعية لتجنب الأخطاء
+          circuitDestination: res.circuit?.distination || 'Inconnue',
+          circuitNom: res.circuit?.description || '',
+          clientEmail: res.client?.email || '',
+          clientNom: res.client ? `${res.client.firstName} ${res.client.lastName}` : 'Moi'
+        }));
+
+        this.filteredReservations = [...this.reservations];
+
+        // ✅ تحديث الإحصائيات بعد جلب البيانات
+        this.calculateStats();
+
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Erreur chargement réservations:', error);
+        this.isLoading = false;
+      }
+    });
   }
 
   calculateStats() {
     this.totalReservations = this.reservations.length;
     this.confirmedReservations = this.reservations.filter(r => r.statut === 'CONFIRMEE').length;
     this.pendingReservations = this.reservations.filter(r => r.statut === 'EN_ATTENTE').length;
+
+    // حساب المبلغ الإجمالي للحجوزات المؤكدة فقط
     this.totalSpent = this.reservations
       .filter(r => r.statut === 'CONFIRMEE')
-      .reduce((total, res) => total + res.prixTotal, 0);
+      .reduce((total, res) => total + (res.prixTotal || 0), 0);
   }
 
   filterReservations() {
@@ -126,10 +95,10 @@ export class ReservationListComponent implements OnInit {
     if (this.searchTerm.trim()) {
       const search = this.searchTerm.toLowerCase();
       filtered = filtered.filter(res =>
-        res.clientNom.toLowerCase().includes(search) ||
-        res.clientEmail.toLowerCase().includes(search) ||
-        res.circuitNom.toLowerCase().includes(search) ||
-        res.circuitDestination.toLowerCase().includes(search)
+        (res.clientNom && res.clientNom.toLowerCase().includes(search)) ||
+        (res.clientEmail && res.clientEmail.toLowerCase().includes(search)) ||
+        (res.circuitNom && res.circuitNom.toLowerCase().includes(search)) ||
+        (res.circuitDestination && res.circuitDestination.toLowerCase().includes(search))
       );
     }
 
@@ -147,16 +116,23 @@ export class ReservationListComponent implements OnInit {
   }
 
   viewReservation(reservation: Reservation) {
+    // التوجيه لصفحة التفاصيل (تأكد أن هذا المسار موجود في الـ Routing)
     this.router.navigate(['/client/reservations', reservation.id]);
   }
 
   cancelReservation(reservation: Reservation) {
     if (confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')) {
-      console.log('Annulation réservation:', reservation.id);
+      this.reservationService.cancelReservation(reservation.id).subscribe({
+        next: () => {
+          // تحديث الحالة محلياً
+          reservation.statut = 'ANNULEE';
+          this.calculateStats(); // تحديث الإحصائيات
+        },
+        error: (err) => console.error('Erreur annulation', err)
+      });
     }
   }
 
-  // MÉTHODE MANQUANTE - À AJOUTER
   processPayment(reservation: Reservation) {
     this.router.navigate(['/client/payment/paypal'], {
       queryParams: {

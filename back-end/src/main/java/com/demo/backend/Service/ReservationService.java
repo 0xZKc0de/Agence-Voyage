@@ -7,6 +7,8 @@ import com.demo.backend.Repository.CircuitRepository;
 import com.demo.backend.Repository.ClientRepository;
 import com.demo.backend.Repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,6 +94,12 @@ public class ReservationService {
 
     public long getReservationsCount() {
         return reservationRepository.count();
+    }
+
+    public List<Reservation> getMyReservations() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentEmail = authentication.getName();
+        return reservationRepository.findByClientEmail(currentEmail);
     }
 
 }

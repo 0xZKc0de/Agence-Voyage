@@ -54,5 +54,11 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getReservationsCount());
     }
 
+    // To list reservations of client current
+    @GetMapping("/my-reservations")
+    public ResponseEntity<List<Reservation>> getMyReservations() {
+        return ResponseEntity.ok(reservationService.getMyReservations());
+    }
+
 
 }
