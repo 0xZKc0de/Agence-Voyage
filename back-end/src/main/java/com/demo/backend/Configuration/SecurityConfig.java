@@ -36,7 +36,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/reservations/count").permitAll()
                         .requestMatchers("/api/clients/count").permitAll()
-                        
+
                         .requestMatchers("/images/**").permitAll()
 
                         .anyRequest().authenticated()
