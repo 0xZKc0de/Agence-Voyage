@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/circuits/destinations").permitAll()
 
                         .requestMatchers("/api/reservations/count").permitAll()
+                        .requestMatchers("/api/reservations").permitAll()
                         .requestMatchers("/api/clients/count").permitAll()
 
                         .requestMatchers("/images/**").permitAll()
