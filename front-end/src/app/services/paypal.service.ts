@@ -6,7 +6,6 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class PaypalService {
-  // تأكد أن هذا الرابط يطابق الباك إند
   private apiUrl = 'http://localhost:8080/api/paypal';
 
   constructor(private http: HttpClient) {}
@@ -18,9 +17,16 @@ export class PaypalService {
     });
   }
 
+
+
   capturePayment(orderId: string, reservationId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/capture/${orderId}/${reservationId}`, {}, {
-      withCredentials: true
-    });
+    return this.http.post(
+      `${this.apiUrl}/capture/${orderId}/${reservationId}`,
+      {},
+      {
+        withCredentials: true,
+        responseType: 'text'
+      }
+    );
   }
 }

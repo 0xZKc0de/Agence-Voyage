@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common'; // استيراد مهم
 import { ActivatedRoute, Router } from '@angular/router';
 import { PaypalService } from '../../services/paypal.service';
 
@@ -18,31 +18,31 @@ export class PaymentSuccessComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private paypalService: PaypalService
+    private paypalService: PaypalService,
+    @Inject(PLATFORM_ID) private platformId: Object // حقن معرف المنصة لمعرفة هل نحن في المتصفح أم السيرفر
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      // 1. الحصول على رمز الدفع من باي بال
-      const orderId = params['token'];
+    // التحقق من أننا داخل المتصفح قبل تنفيذ الكود
+    if (isPlatformBrowser(this.platformId)) {
+      this.route.queryParams.subscribe(params => {
+        const orderId = params['token'];
+        let reservationId = params['resId'];
 
-      // 2. محاولة الحصول على رقم الحجز (إما من الرابط أو من الذاكرة المؤقتة)
-      let reservationId = params['resId'];
+        if (!reservationId) {
+          // استخدام localStorage فقط إذا كنا في المتصفح (وهو مضمون بفضل الشرط الخارجي)
+          reservationId = localStorage.getItem('currentReservationId');
+        }
 
-      if (!reservationId) {
-        // إذا لم يكن في الرابط، نحاول جلبه من الذاكرة (الذي حفظناه في الخطوة السابقة)
-        reservationId = localStorage.getItem('currentReservationId');
-      }
-
-      if (orderId && reservationId) {
-        this.validatePayment(orderId, Number(reservationId));
-      } else {
-        this.isLoading = false;
-        this.success = false;
-        this.errorMessage = "عذراً، بيانات الدفع مفقودة (رقم الحجز أو التوكن غير موجود).";
-        console.error('Missing params. Token:', orderId, 'ResId:', reservationId);
-      }
-    });
+        if (orderId && reservationId) {
+          this.validatePayment(orderId, Number(reservationId));
+        } else {
+          this.isLoading = false;
+          this.success = false;
+          this.errorMessage = "عذراً، بيانات الدفع مفقودة.";
+        }
+      });
+    }
   }
 
   validatePayment(orderId: string, reservationId: number) {
@@ -51,20 +51,22 @@ export class PaymentSuccessComponent implements OnInit {
         console.log('Payment Captured:', response);
         this.success = true;
         this.isLoading = false;
-        // تنظيف الذاكرة بعد النجاح
-        localStorage.removeItem('currentReservationId');
+
+        // التحقق مرة أخرى قبل الحذف لتجنب الخطأ
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.removeItem('currentReservationId');
+        }
       },
       error: (err) => {
         console.error('Capture error:', err);
         this.success = false;
         this.isLoading = false;
-        this.errorMessage = "فشل تأكيد الدفع مع النظام. يرجى الاتصال بالدعم.";
+        this.errorMessage = "حدث خطأ أثناء تأكيد الدفع.";
       }
     });
   }
 
   goToReservations() {
-    // يمكنك تغيير الرابط حسب ما يناسب تطبيقك
-    this.router.navigate(['/']);
+    this.router.navigate(['/client/reservations']);
   }
 }
