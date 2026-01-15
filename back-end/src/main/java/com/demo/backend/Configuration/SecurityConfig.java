@@ -26,7 +26,6 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // السماح بمسارات المصادقة
                         .requestMatchers("/api/auth/**").permitAll()
 
                         // السماح بمسارات الصور والملفات
