@@ -1,14 +1,7 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-
-interface PaymentDetails {
-  reservationId: number;
-  amount: number;
-  description: string;
-  clientEmail: string;
-}
+import { PaypalService } from '../../../services/paypal.service';
 
 @Component({
   selector: 'app-paypal-payment',
@@ -17,58 +10,50 @@ interface PaymentDetails {
   templateUrl: './paypal-payment.component.html',
   styleUrls: ['./paypal-payment.component.css']
 })
-export class PaypalPaymentComponent implements OnInit, AfterViewInit {
-  paymentDetails: PaymentDetails | null = null;
+export class PaypalPaymentComponent implements OnInit {
+  paymentDetails: any = null;
   isLoading = true;
   isProcessing = false;
-  
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private http: HttpClient
+    private paypalService: PaypalService // حقن الخدمة
   ) {}
 
   ngOnInit() {
-    // Récupérer les détails de la réservation
     this.route.queryParams.subscribe(params => {
-      this.paymentDetails = {
-        reservationId: +params['reservationId'] || 1,
-        amount: +params['amount'] || 0,
-        description: `Réservation #${params['reservationId'] || '1'}`,
-        clientEmail: params['clientEmail'] || 'client@example.com' // À remplacer par l'email réel
-      };
-      this.isLoading = false;
+      if (params['reservationId']) {
+        this.paymentDetails = {
+          reservationId: +params['reservationId'],
+          amount: +params['amount'],
+          clientEmail: params['clientEmail']
+        };
+        this.isLoading = false;
+      } else {
+        // إذا لم توجد بيانات، نعود للقائمة
+        this.router.navigate(['/client/reservations']);
+      }
     });
   }
 
-  ngAfterViewInit() {
-    // Initialiser PayPal Button (si utilisé)
-    this.loadPayPalScript();
-  }
-
-  loadPayPalScript() {
-    // À implémenter: Charger le SDK PayPal
-    // Exemple:
-    // const script = document.createElement('script');
-    // script.src = 'https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=EUR';
-    // document.head.appendChild(script);
-  }
-
-  simulatePayment() {
+  payWithPaypal() {
     this.isProcessing = true;
-    
-    // Simuler un paiement réussi
-    setTimeout(() => {
-      this.isProcessing = false;
-      
-      // Rediriger vers la page de statut
-      this.router.navigate(['/client/reservations']);
-    }, 2000);
+
+    this.paypalService.createPayment(this.paymentDetails.reservationId).subscribe({
+      next: (approvalUrl) => {
+        console.log('Redirecting to:', approvalUrl);
+        window.location.href = approvalUrl;
+      },
+      error: (err) => {
+        console.error('Error creating payment:', err);
+        this.isProcessing = false;
+        alert('Une erreur est survenue lors de l\'initialisation du paiement.');
+      }
+    });
   }
 
   cancelPayment() {
-    if (confirm('Êtes-vous sûr de vouloir annuler le paiement ?')) {
-      this.router.navigate(['/client/reservations']);
-    }
+    this.router.navigate(['/client/reservations']);
   }
 }

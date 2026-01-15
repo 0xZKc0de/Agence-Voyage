@@ -1,330 +1,153 @@
 .reservation-create-page {
   min-height: 100vh;
-  background: #f9f7f3;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  padding: 20px 40px;
+  background: #f9f7f3; /* لونك المفضل */
+  padding: 40px 20px;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 .create-container {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
 /* HEADER */
 .create-header {
-  margin-bottom: 40px;
   text-align: center;
+  margin-bottom: 50px;
+}
+.create-header h2 { color: #5d534a; font-size: 2rem; margin-bottom: 10px; }
+.create-header p { color: #8b806b; }
+
+/* LAYOUT GRID (Left & Right columns) */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr; /* اليسار أعرض قليلاً من اليمين */
+  gap: 40px;
+  align-items: start;
 }
 
-.create-header h2 {
-  font-size: 36px;
-  color: #5d534a;
-  margin-bottom: 10px;
-}
-
-.create-header p {
-  color: #8b806b;
-  font-size: 16px;
-}
-
-/* LOADING */
-.loading-spinner {
-  text-align: center;
-  padding: 60px;
-  color: #8b806b;
-  font-size: 16px;
-  background: white;
-  border-radius: 16px;
-  border: 1px solid #e8dfca;
-}
-
-/* FORM */
-.form-sections {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
+/* Form Sections */
 .form-section {
   background: white;
-  border-radius: 16px;
-  padding: 30px;
-  border: 1px solid #e8dfca;
-  box-shadow: 0 5px 20px rgba(139, 128, 107, 0.08);
-}
-
-.form-section h3 {
-  font-size: 18px;
-  color: #5d534a;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #f9f7f3;
-}
-
-/* FORM GROUPS */
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #5d534a;
-  font-size: 14px;
-}
-
-.form-select,
-.form-input,
-.form-textarea {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #e8dfca;
-  border-radius: 8px;
-  font-size: 14px;
-  background: white;
-  color: #5d534a;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-}
-
-.form-select {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235d534a' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: calc(100% - 16px) center;
-  background-size: 12px;
-}
-
-.form-select:focus,
-.form-input:focus,
-.form-textarea:focus {
-  outline: none;
-  border-color: #a38f6d;
-  box-shadow: 0 0 0 3px rgba(163, 143, 109, 0.1);
-}
-
-.form-textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-.hint {
-  display: block;
-  margin-top: 6px;
-  color: #8b806b;
-  font-size: 12px;
-}
-
-/* FORM ROW */
-.form-row {
-  display: flex;
-  gap: 20px;
-}
-
-.form-row .form-group {
-  flex: 1;
-}
-
-/* CIRCUIT INFO CARD */
-.circuit-info-card {
-  background: #f9f7f3;
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 20px;
-  border: 1px solid #e8dfca;
-}
-
-.circuit-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 15px;
-}
-
-.circuit-header h4 {
-  font-size: 16px;
-  color: #5d534a;
-  margin: 0;
-}
-
-.circuit-price {
-  font-size: 18px;
-  font-weight: 600;
-  color: #a38f6d;
-}
-
-.circuit-details {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.detail-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 4px 0;
-  border-bottom: 1px solid #eee4cc;
-}
-
-.detail-item:last-child {
-  border-bottom: none;
-}
-
-.detail-label {
-  color: #8b806b;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.detail-value {
-  color: #5d534a;
-  font-size: 13px;
-  text-align: right;
-}
-
-.detail-value.low {
-  color: #e74c3c;
-  font-weight: 500;
-}
-
-/* INPUT NUMBER NORMAL SIMPLE */
-.normal-number-input {
-  width: 200px;
-  height: 25px;
-  padding: 8px 12px;
-  border: 1px solid #e8dfca;
-  border-radius: 8px;
-  font-size: 16px;
-  color: #5d534a;
-  background: white;
-  transition: all 0.3s ease;
-}
-
-.normal-number-input:focus {
-  outline: none;
-  border-color: #a38f6d;
-  box-shadow: 0 0 0 3px rgba(163, 143, 109, 0.1);
-}
-
-.normal-number-input:hover {
-  border-color: #a38f6d;
-}
-
-/* SUMMARY */
-.summary-section .summary-card {
-  background: #f9f7f3;
-  border-radius: 12px;
   padding: 25px;
+  border-radius: 16px;
   border: 1px solid #e8dfca;
+  margin-bottom: 20px;
+}
+.form-section h3 {
+  color: #5d534a;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 10px;
 }
 
-.summary-item {
+/* Inputs & Selects */
+.form-select, .form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fff;
+}
+.form-select:focus, .form-input:focus {
+  outline: none;
+  border-color: #a38f6d;
+}
+
+/* The "Airbnb Style" Static Selection */
+.selected-circuit-static {
+  background: #fdfbf7;
+  border: 1px solid #d4cbb8;
+  padding: 15px;
+  border-radius: 10px;
   display: flex;
   justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee4cc;
-  color: #5d534a;
-  font-size: 14px;
+  align-items: center;
+}
+.static-label { display: block; font-size: 0.85rem; color: #8b806b; }
+.static-value { display: block; font-size: 1.1rem; font-weight: bold; color: #5d534a; }
+.badge-confirmed {
+  background: #e8f5e9;
+  color: #27ae60;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
 }
 
-.summary-item:last-child {
-  border-bottom: none;
+/* Mini Details */
+.circuit-details-mini {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #666;
 }
-
-.summary-divider {
-  height: 1px;
-  background: #e8dfca;
-  margin: 15px 0;
-}
-
-.summary-item.total {
-  font-size: 18px;
-  font-weight: 600;
-  padding-top: 15px;
-}
-
-.total-amount {
-  color: #a38f6d;
-  font-size: 20px;
-}
-
-/* FORM ACTIONS */
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  margin-top: 40px;
-  padding-top: 30px;
-  border-top: 1px solid #e8dfca;
-}
-
-.btn-cancel,
-.btn-submit {
-  padding: 14px 32px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: all 0.3s ease;
-  min-width: 180px;
-}
-
-.btn-cancel {
+.tags span {
   background: #f0f0f0;
-  color: #8b806b;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-right: 10px;
+  font-size: 0.85rem;
 }
 
-.btn-cancel:hover {
-  background: #e0e0e0;
+/* SUMMARY CARD (Right Side) */
+.summary-card {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  border: 1px solid #e8dfca;
+  position: sticky;
+  top: 20px; /* يجعلها تلاحقك عند التمرير */
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
   color: #5d534a;
 }
+.divider { height: 1px; background: #eee; margin: 20px 0; }
+.total { font-size: 1.3rem; font-weight: bold; color: #2c3e50; }
+.total-price { color: #a38f6d; }
 
+/* Buttons */
 .btn-submit {
+  width: 100%;
+  padding: 15px;
   background: #a38f6d;
   color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background 0.3s;
+}
+.btn-submit:hover:not(:disabled) { background: #8b806b; }
+.btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+
+.btn-cancel {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  color: #888;
+  border: none;
+  margin-top: 10px;
+  cursor: pointer;
+}
+.btn-cancel:hover { color: #333; text-decoration: underline; }
+
+.secure-badge {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-top: 20px;
 }
 
-.btn-submit:hover:not(:disabled) {
-  background: #8b806b;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(139, 128, 107, 0.2);
-}
-
-.btn-submit:disabled {
-  background: #c0c4cc;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-/* RESPONSIVE */
+/* Responsive */
 @media (max-width: 768px) {
-  .reservation-create-page {
-    padding: 20px;
-  }
-  
-  .form-row {
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .form-section {
-    padding: 20px;
-  }
-  
-  .circuit-header {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-  }
-  
-  .btn-cancel,
-  .btn-submit {
-    width: 100%;
-  }
+  .content-grid { grid-template-columns: 1fr; }
+  .summary-card { position: static; }
 }

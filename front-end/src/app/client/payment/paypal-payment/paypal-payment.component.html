@@ -22,23 +22,23 @@
               🔒 Sécurisé
             </div>
           </div>
-          
+
           <div class="info-details">
             <div class="detail-row">
               <span>Numéro de réservation</span>
               <span class="value">#{{ paymentDetails.reservationId }}</span>
             </div>
-            
+
             <div class="detail-row">
               <span>Montant à payer</span>
               <span class="value amount">{{ paymentDetails.amount | currency:'MAD ' }}</span>
             </div>
-            
+
             <div class="detail-row">
               <span>Description</span>
               <span class="value">{{ paymentDetails.description }}</span>
             </div>
-            
+
             <div class="detail-row">
               <span>Email de facturation</span>
               <span class="value">{{ paymentDetails.clientEmail }}</span>
@@ -51,7 +51,7 @@
           <div class="methods-header">
             <h3>Méthodes de paiement</h3>
           </div>
-          
+
           <div class="methods-list">
             <!-- PAYPAL BUTTON (simulé) -->
             <div class="method-card active">
@@ -66,7 +66,7 @@
                 </div>
               </div>
             </div>
-            
+
           </div>
         </div>
       </div>
@@ -80,13 +80,13 @@
             <p>Vos informations sont cryptées et protégées</p>
           </div>
         </div>
-        
+
         <div class="action-buttons">
           <button class="btn-cancel" (click)="cancelPayment()" [disabled]="isProcessing">
             Annuler
           </button>
-          
-          <button class="btn-pay" (click)="simulatePayment()" [disabled]="isProcessing">
+
+          <button class="btn-pay" (click)="payWithPaypal()" [disabled]="isProcessing">
             <span *ngIf="!isProcessing">
               Payer {{ paymentDetails.amount | currency:'MAD ' }} avec PayPal
             </span>

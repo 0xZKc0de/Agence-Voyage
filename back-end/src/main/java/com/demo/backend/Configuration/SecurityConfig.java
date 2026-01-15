@@ -2,7 +2,6 @@ package com.demo.backend.Configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -24,22 +23,27 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // السماح بمسارات المصادقة
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/v1/circuits/**").permitAll()
-
-                        .requestMatchers(HttpMethod.GET, "/api/v1/circuits/destinations").permitAll()
-
-                        .requestMatchers("/api/reservations/count").permitAll()
-                        .requestMatchers("/api/reservations").permitAll()
-                        .requestMatchers("/api/clients/count").permitAll()
-
+                        // السماح بمسارات الصور والملفات
                         .requestMatchers("/images/**").permitAll()
 
+                        // --- نقاط التعديل الهامة هنا ---
+
+                        // 1. السماح بكافة عمليات الحجز (إنشاء، عرض، إلخ)
+                        .requestMatchers("/api/reservations/**").permitAll()
+
+                        // 2. السماح بكافة عمليات PayPal (إنشاء الدفع، التأكيد)
+                        .requestMatchers("/api/paypal/**").permitAll()
+
+                        // 3. السماح بمسارات الرحلات (Circuits)
+                        .requestMatchers("/api/v1/circuits/**").permitAll()
+
+                        // أي طلب آخر يتطلب تسجيل دخول
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -52,6 +56,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // تأكد من أن هذا الرابط يطابق رابط الفرونت إند الخاص بك
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));

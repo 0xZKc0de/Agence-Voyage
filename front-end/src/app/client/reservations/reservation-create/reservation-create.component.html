@@ -1,168 +1,98 @@
 <div class="reservation-create-page">
   <div class="create-container">
-    <!-- HEADER -->
+
     <div class="create-header">
-      <h2>Nouvelle Réservation</h2>
-      <p>Remplissez les informations pour créer une nouvelle réservation</p>
+      <h2>Finaliser votre réservation</h2>
+      <p>Vous êtes à une étape de votre prochaine aventure</p>
     </div>
 
-    <!-- LOADING -->
-    <div class="loading-spinner" *ngIf="isLoading">
-      Chargement des circuits disponibles...
+    <div class="loading-spinner" *ngIf="isLoading" style="text-align: center; padding: 20px;">
+      <p>⏳ Chargement des circuits...</p>
     </div>
 
-    <!-- FORM -->
     <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
-      <div class="form-sections">
-        <!-- CIRCUIT SELECTION -->
-        <div class="form-section">
-          <h3>1. Sélection du Circuit</h3>
-          
-          <div class="form-group">
-            <label for="circuitId">Circuit *</label>
-            <select 
-              id="circuitId"
-              formControlName="circuitId"
-              (change)="onCircuitChange($any($event.target).value)"
-              class="form-select"
-            >
-              <option value="">Choisissez un circuit</option>
-              <option *ngFor="let circuit of circuits" [value]="circuit.id">
-                {{ circuit.nom }} - {{ circuit.destination }} ({{ circuit.prix | currency:'MAD ' }})
-              </option>
-            </select>
-          </div>
+      <div class="content-grid">
 
-          <!-- CIRCUIT INFO -->
-          <div class="circuit-info-card" *ngIf="selectedCircuit">
-            <div class="circuit-header">
-              <h4>{{ selectedCircuit.nom }}</h4>
-              <span class="circuit-price">{{ selectedCircuit.prix | currency:'MAD ' }}</span>
-            </div>
-            
-            <div class="circuit-details">
-              <div class="detail-item">
-                <span class="detail-label">Destination</span>
-                <span class="detail-value">{{ selectedCircuit.destination }}</span>
-              </div>
-              
-              <div class="detail-item">
-                <span class="detail-label">Durée</span>
-                <span class="detail-value">{{ selectedCircuit.duree }} jours</span>
-              </div>
-              
-              <div class="detail-item">
-                <span class="detail-label">Date de départ</span>
-                <span class="detail-value">{{ selectedCircuit.dateDepart | date:'dd/MM/yyyy' }}</span>
-              </div>
-              
-              <div class="detail-item">
-                <span class="detail-label">Places disponibles</span>
-                <span class="detail-value" [class.low]="selectedCircuit.placesRestantes <= 3">
-                  {{ selectedCircuit.placesRestantes }}
-                </span>
-              </div>
-              
-              <div class="detail-item">
-                <span class="detail-label">Description</span>
-                <span class="detail-value">{{ selectedCircuit.description }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div class="form-column">
+          <div class="form-section">
+            <h3>📍 Destination</h3>
 
-        <!-- RESERVATION DETAILS -->
-        <div class="form-section">
-          <h3>2. Détails de la Réservation</h3>
-          
-          <div class="form-row">
-            <!-- Si vous voulez juste l'input number sans boutons ± -->
             <div class="form-group">
-              <label>Nombre de participants *</label>
-              <input 
-                type="number" 
-                formControlName="participants"
-                min="1"
-                [max]="selectedCircuit?.placesRestantes || 10"
-                class="normal-number-input"
-                (change)="onParticipantsChange($event)"
+              <select
+                formControlName="circuitId"
+                (change)="onCircuitChange($any($event.target).value)"
+                class="form-select"
               >
-              <small class="hint" *ngIf="selectedCircuit">
-                Maximum: {{ selectedCircuit.placesRestantes }} places disponibles
+                <option value="">Sélectionnez un circuit</option>
+                <option *ngFor="let circuit of circuits" [value]="circuit.id">
+                  {{ circuit.distination || circuit.destination || circuit.nom }} ({{ circuit.prix }} DH)
+                </option>
+              </select>
+
+              <div *ngIf="selectedCircuit" class="selected-info" style="margin-top: 15px; padding: 10px; background: #f0f0f0; border-radius: 8px;">
+                <strong>Description:</strong> {{ selectedCircuit.description }} <br>
+                <strong>Date:</strong> {{ selectedCircuit.dateDepart | date:'dd/MM/yyyy' }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>👥 Voyageurs</h3>
+            <div class="form-group">
+              <label>Nombre de personnes</label>
+              <input
+                type="number"
+                formControlName="participants"
+                class="form-input"
+                min="1"
+              />
+              <small class="text-muted" *ngIf="selectedCircuit">
+                Places disponibles: {{ selectedCircuit.placesRestantes || selectedCircuit.nb_places }}
               </small>
             </div>
-            
-            <div class="form-group">
-              <label for="dateDepart">Date de départ *</label>
-              <input 
-                type="date" 
-                id="dateDepart"
-                formControlName="dateDepart"
-                class="form-input"
-                [min]="getToday()">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="notes">Notes supplémentaires</label>
-            <textarea 
-              id="notes"
-              formControlName="notes"
-              rows="3"
-              class="form-textarea"
-              placeholder="Précisions particulières, allergies, préférences..."
-            ></textarea>
           </div>
         </div>
 
-        <!-- SUMMARY -->
-        <div class="form-section summary-section">
-          <h3>3. Récapitulatif</h3>
-          
+        <div class="summary-column">
           <div class="summary-card">
-            <div class="summary-item">
-              <span>Circuit sélectionné</span>
-              <span>{{ selectedCircuit?.nom || 'Non sélectionné' }}</span>
+            <h3>Récapitulatif</h3>
+
+            <div class="summary-row">
+              <span>Prix par personne</span>
+              <span>{{ (selectedCircuit?.prix) || 0 }} DH</span>
             </div>
-            
-            <div class="summary-item">
-              <span>Prix unitaire</span>
-              <span>{{ (selectedCircuit?.prix | currency:'MAD ') || '0 MAD' }}</span>
+
+            <div class="summary-row">
+              <span>Voyageurs</span>
+              <span>x {{ reservationForm.get('participants')?.value }}</span>
             </div>
-            
-            <div class="summary-item">
-              <span>Nombre de participants</span>
-              <span>{{ reservationForm.get('participants')?.value || 0 }}</span>
+
+            <div class="divider"></div>
+
+            <div class="summary-row total">
+              <span>Total</span>
+              <span class="total-price">{{ calculateTotal() }} DH</span>
             </div>
-            
-            <div class="summary-item">
-              <span>Date de départ</span>
-              <span>{{ (reservationForm.get('dateDepart')?.value | date:'dd/MM/yyyy') || 'Non définie' }}</span>
-            </div>
-            
-            <div class="summary-divider"></div>
-            
-            <div class="summary-item total">
-              <span>Total à payer</span>
-              <span class="total-amount">{{ calculateTotal() | currency:'MAD ' }}</span>
+
+            <button
+              type="submit"
+              class="btn-submit"
+              [disabled]="reservationForm.invalid || isSubmitting"
+            >
+              <span *ngIf="!isSubmitting">Payer et Réserver</span>
+              <span *ngIf="isSubmitting">Redirection...</span>
+            </button>
+
+            <button type="button" class="btn-cancel" (click)="cancel()">
+              Annuler
+            </button>
+
+            <div class="secure-badge" style="margin-top: 10px; text-align: center; font-size: 0.9em; color: #666;">
+              🔒 Paiement sécurisé par PayPal
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- ACTIONS -->
-      <div class="form-actions">
-        <button type="button" class="btn-cancel" (click)="cancel()">
-          Annuler
-        </button>
-        <button 
-          type="submit" 
-          class="btn-submit"
-          [disabled]="!reservationForm.valid || isSubmitting"
-        >
-          <span *ngIf="!isSubmitting">Continuer vers le paiement</span>
-          <span *ngIf="isSubmitting">Traitement en cours...</span>
-        </button>
       </div>
     </form>
   </div>

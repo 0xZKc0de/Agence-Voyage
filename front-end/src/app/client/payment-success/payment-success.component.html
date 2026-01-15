@@ -1,0 +1,25 @@
+<div class="payment-container">
+  <div *ngIf="isLoading" class="status-card loading">
+    <div class="spinner"></div>
+    <h2>جاري تأكيد الدفع...</h2>
+    <p>يرجى الانتظار، نقوم بالتواصل مع PayPal وتأكيد حجزك.</p>
+  </div>
+
+  <div *ngIf="!isLoading && success" class="status-card success">
+    <div class="icon-circle">✅</div>
+    <h2>تم الدفع بنجاح!</h2>
+    <p>شكراً لك. تم تأكيد حجزك بنجاح في النظام.</p>
+    <button (click)="goToReservations()" class="btn-primary">
+      العودة للصفحة الرئيسية
+    </button>
+  </div>
+
+  <div *ngIf="!isLoading && !success" class="status-card error">
+    <div class="icon-circle">❌</div>
+    <h2>حدث خطأ!</h2>
+    <p>{{ errorMessage }}</p>
+    <button (click)="goToReservations()" class="btn-secondary">
+      العودة والمحاولة لاحقاً
+    </button>
+  </div>
+</div>

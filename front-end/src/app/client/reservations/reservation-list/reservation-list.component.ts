@@ -116,7 +116,6 @@ export class ReservationListComponent implements OnInit {
   }
 
   viewReservation(reservation: Reservation) {
-    // التوجيه لصفحة التفاصيل (تأكد أن هذا المسار موجود في الـ Routing)
     this.router.navigate(['/client/reservations', reservation.id]);
   }
 
