@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -28,26 +27,39 @@ public class ReservationService {
     @Autowired
     private ClientRepository clientRepository;
 
+    @Transactional
     public Reservation initiateReservation(ReservationRequest request) {
 
         Circuit circuit = circuitRepository.findById(request.getCircuitId())
                 .orElseThrow(() -> new RuntimeException("Circuit not found"));
 
+        // 1. Check availability and decrement stock
+        if (circuit.getNb_places() < request.getNbPersons()) {
+            throw new RuntimeException("Not enough places available. Remaining: " + circuit.getNb_places());
+        }
+
+        circuit.setNb_places(circuit.getNb_places() - request.getNbPersons());
+        circuitRepository.save(circuit);
+
         Admin admin = adminRepository.findById(1)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
-        Client client = clientRepository.findById(1)
-                .orElseThrow(() -> new RuntimeException("Client not found"));
+        // 2. Get the currently logged-in client
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentEmail = authentication.getName();
 
-        Reservation res = new Reservation();
-        res.setCircuit(circuit);
-        res.setAdmin(admin);
-        res.setClient(client);
-        res.setNbPersons(request.getNbPersons());
-        res.setDateReservation(new Date());
-        res.setStatus("PENDING");
+        Client client = clientRepository.findByEmail(currentEmail)
+                .orElseThrow(() -> new RuntimeException("Client not found for email: " + currentEmail));
 
-        return reservationRepository.save(res);
+        Reservation reservation = new Reservation();
+        reservation.setDateReservation(new Date());
+        reservation.setNbPersons(request.getNbPersons());
+        reservation.setCircuit(circuit);
+        reservation.setClient(client);
+        reservation.setAdmin(admin);
+        reservation.setStatus("PENDING");
+
+        return reservationRepository.save(reservation);
     }
 
     @Transactional
@@ -55,16 +67,18 @@ public class ReservationService {
         Reservation res = reservationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reservation not found"));
 
-        if ("CANCELLED".equals(res.getStatus())) {
-            throw new RuntimeException("This reservation is already cancelled");
+        if (!"PENDING".equals(res.getStatus())) {
+            throw new RuntimeException("Cannot cancel reservation. Status is not PENDING.");
         }
 
-        if ("PAID".equals(res.getStatus())) {
-            throw new RuntimeException("Cannot cancel a paid reservation directly. Please contact support.");
+        // 3. Restore stock upon cancellation
+        Circuit circuit = res.getCircuit();
+        if (circuit != null) {
+            circuit.setNb_places(circuit.getNb_places() + res.getNbPersons());
+            circuitRepository.save(circuit);
         }
 
         res.setStatus("CANCELLED");
-
         return reservationRepository.save(res);
     }
 
@@ -88,6 +102,7 @@ public class ReservationService {
 
         return reservationRepository.save(res);
     }
+
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
     }
@@ -101,5 +116,4 @@ public class ReservationService {
         String currentEmail = authentication.getName();
         return reservationRepository.findByClientEmail(currentEmail);
     }
-
 }

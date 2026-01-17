@@ -19,18 +19,16 @@ export class PaymentSuccessComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private paypalService: PaypalService,
-    @Inject(PLATFORM_ID) private platformId: Object // حقن معرف المنصة لمعرفة هل نحن في المتصفح أم السيرفر
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit() {
-    // التحقق من أننا داخل المتصفح قبل تنفيذ الكود
     if (isPlatformBrowser(this.platformId)) {
       this.route.queryParams.subscribe(params => {
         const orderId = params['token'];
         let reservationId = params['resId'];
 
         if (!reservationId) {
-          // استخدام localStorage فقط إذا كنا في المتصفح (وهو مضمون بفضل الشرط الخارجي)
           reservationId = localStorage.getItem('currentReservationId');
         }
 
@@ -52,7 +50,7 @@ export class PaymentSuccessComponent implements OnInit {
         this.success = true;
         this.isLoading = false;
 
-        // التحقق مرة أخرى قبل الحذف لتجنب الخطأ
+
         if (isPlatformBrowser(this.platformId)) {
           localStorage.removeItem('currentReservationId');
         }

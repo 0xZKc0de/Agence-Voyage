@@ -38,12 +38,12 @@ public class CircuitService {
                 .toList();
     }
 
-    // إضافة رحلة جديدة
+
     public Circuit addCircuit(Circuit circuit) {
         return circuitRepository.save(circuit);
     }
 
-    // تحديث رحلة موجودة
+
     public Circuit updateCircuit(int id, Circuit circuitDetails) {
         Circuit circuit = circuitRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Circuit not found with id: " + id));
@@ -58,7 +58,7 @@ public class CircuitService {
         return circuitRepository.save(circuit);
     }
 
-    // حذف رحلة
+
     public void deleteCircuit(int id) {
         Circuit circuit = circuitRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Circuit not found with id: " + id));
