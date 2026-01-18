@@ -25,6 +25,8 @@
   border-color: #a38f6d;
 }
 
+
+
 /* Table card */
 .clients-table-card {
   background: white;
@@ -89,6 +91,28 @@ tr:hover {
 tr.inactive {
   opacity: 0.6;
 }
+
+/* Delete button */
+.btn-delete {
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  background: #e25454; /* red for delete */
+  color: white;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn-delete:hover {
+  background: #9b2c2c; /* darker red on hover */
+  transform: scale(1.05); /* subtle zoom effect */
+}
+
+.btn-delete:active {
+  transform: scale(0.95); /* button press effect */
+}
+
 
 /* Action button */
 .btn-status {

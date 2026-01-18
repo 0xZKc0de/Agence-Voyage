@@ -24,36 +24,27 @@
   </div>
 
   <!-- Right table -->
-  <div class="middle-table">
-    <h3>Top 5 clients</h3>
+ <div class="middle-table">
+  <h3>Top 5 clients</h3>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Réservations</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Mariam Chairi</td>
-          <td>3</td>
-          <td>1600 DH</td>
-        </tr>
-        <tr>
-          <td>Mohamed El Haddad</td>
-          <td>3</td>
-          <td>1200 DH</td>
-        </tr>
-        <tr>
-          <td>Chifae Jbari</td>
-          <td>2</td>
-          <td>1000 DH</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Réservations</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let client of topClients">
+        <td>{{ client.firstName }} {{ client.lastName }}</td>
+        <td>{{ client.reservationsCount }}</td>
+        <td>{{ client.totalAmount | number:'1.0-2' }} DH</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 
 </div>
 
@@ -82,17 +73,19 @@
       <div class="stat-icon icon-trips"></div>
       <div class="stat-info">
         <h3>Circuits</h3>
-        <span class="stat-number">12</span>
+        <span class="stat-number">{{ circuitsCount }}</span>
       </div>
     </div>
+
 
     <div class="stat-card">
       <div class="stat-icon icon-revenue"></div>
       <div class="stat-info">
         <h3>Revenus</h3>
-        <span class="stat-number">1400 DH</span>
+        <span class="stat-number">{{ revenue | number:'1.0-2' }} DH</span>
       </div>
     </div>
+
 
   </div>
 

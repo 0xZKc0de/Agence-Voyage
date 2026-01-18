@@ -1,5 +1,6 @@
 package com.demo.backend.Service;
 
+import com.demo.backend.DTO.ClientDTO;
 import com.demo.backend.DTO.RegistrationRequest;
 import com.demo.backend.Entity.Client;
 import com.demo.backend.Repository.AdminRepository;
@@ -83,8 +84,40 @@ public class ClientService {
         return clientRepository.count();
     }
 
-    public List<Client> getTopClients(int limit) {
-        return clientRepository.findTopClients(PageRequest.of(0, limit));
+
+    public List<ClientDTO> getAllClientsDTO() {
+        return clientRepository.findAll()
+                .stream()
+                .map(ClientDTO::new)  // <-- make sure this is used
+                .toList();
     }
+
+    // Get top clients by total reservation amount
+    public List<ClientDTO> getTopClientsDTO(int limit) {
+        return clientRepository.findAll()
+                .stream()
+                .map(client -> {
+                    int resCount = client.getReservations() != null ? client.getReservations().size() : 0;
+                    double total = client.getReservations() != null
+                            ? client.getReservations().stream()
+                            .filter(r -> r.getCircuit() != null)
+                            .mapToDouble(r -> r.getNbPersons() * r.getCircuit().getPrix())
+                            .sum()
+                            : 0;
+                    ClientDTO dto = new ClientDTO();
+                    dto.setFirstName(client.getFirstName());
+                    dto.setLastName(client.getLastName());
+                    dto.setReservationsCount(resCount);
+                    dto.setTotalAmount(total); // only top clients need this
+                    return dto;
+                })
+                .sorted((a, b) -> Double.compare(b.getTotalAmount() != null ? b.getTotalAmount() : 0,
+                        a.getTotalAmount() != null ? a.getTotalAmount() : 0))
+                .limit(limit)
+                .toList();
+    }
+
+
+
 
 }

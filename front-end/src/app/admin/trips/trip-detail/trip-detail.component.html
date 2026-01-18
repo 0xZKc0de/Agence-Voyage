@@ -2,17 +2,17 @@
 <div class="trip-detail-sidebar">
   <div class="sidebar-header">
     <button class="btn-close" (click)="closeSidebar()">
-      <i class="icon-close"></i>
+      <i class="icon-close">×</i>
     </button>
     <h3>Détails du circuit</h3>
   </div>
   
-  <div class="sidebar-content" *ngIf="trip">
+  <div class="sidebar-content" *ngIf="!loading; else loadingTemplate">
     <div class="trip-detail-image">
-      <img [src]="trip.imageUrl" [alt]="trip.nom" />
+      <img [src]="trip?.imageUrl" [alt]="trip?.nom" />
     </div>
     
-    <div class="trip-detail-info">
+    <div class="trip-detail-info" *ngIf="trip">
       <div class="info-section">
         <h4>{{ trip.nom }}</h4>
         <p class="trip-description">{{ trip.description }}</p>
@@ -61,17 +61,23 @@
       
       <div class="action-buttons">
         <button class="btn-edit" (click)="editTrip()">
-          <i class="icon-edit"></i>
+          <i class="icon-edit">✎</i>
           Modifier
         </button>
         <button class="btn-delete" (click)="deleteTrip()">
-          <i class="icon-delete"></i>
+          <i class="icon-delete">🗑</i>
           Supprimer
         </button>
         <button type="button" class="btn-cancel" (click)="closeSidebar()">
-          Annuler
+          Fermer
         </button>
       </div>
     </div>
   </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-spinner">
+      <p>Chargement des détails du circuit...</p>
+    </div>
+  </ng-template>
 </div>

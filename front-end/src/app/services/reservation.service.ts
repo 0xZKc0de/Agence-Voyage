@@ -47,4 +47,8 @@ export class ReservationService {
   updateReservation(id: number, reservationRequest: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${id}/update`, reservationRequest, { withCredentials: true });
   }
+
+  getTotalRevenue(): Observable<number> {
+    return this.http.get<number>('http://localhost:8080/api/reservations/revenue', { withCredentials: true });
+  }
 }

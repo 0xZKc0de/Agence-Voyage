@@ -60,5 +60,10 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getMyReservations());
     }
 
+    @GetMapping("/revenue")
+    public ResponseEntity<Double> getTotalRevenue() {
+        double revenue = reservationService.getTotalRevenue();
+        return ResponseEntity.ok(revenue);
+    }
 
 }

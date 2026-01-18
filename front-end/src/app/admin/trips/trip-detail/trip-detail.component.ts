@@ -1,105 +1,97 @@
 // trips/trip-detail/trip-detail.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
-import { RouterModule } from '@angular/router';
-
-interface Trip {
-  id: number;
-  nom: string;
-  destination: string;
-  description: string;
-  duree: number;
-  prix: number;
-  imageUrl: string;
-  placesTotal: number;
-  placesRestantes: number;
-  active: boolean;
-  dateDepart: Date;
-}
+import { CircuitService } from '../../../services/circuit.service';
+import { CommonModule, DatePipe } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-trip-detail',
   templateUrl: './trip-detail.component.html',
   styleUrls: ['./trip-detail.component.css'],
   standalone: true,
-  imports: [CommonModule, RouterModule, CurrencyPipe, DatePipe],
+  imports: [CommonModule]
 })
-export class TripDetailComponent implements OnInit {
-  trip: Trip | null = null;
-
-  // Minimal mock list of trips
-  private allTrips: Trip[] = [
-    {
-      id: 1,
-      nom: 'Marrakech Express',
-      destination: 'Marrakech',
-      description: 'Découvrez la ville ocre avec ses palais et souks',
-      duree: 5,
-      prix: 2499,
-      imageUrl: 'image1.webp',
-      placesTotal: 20,
-      placesRestantes: 8,
-      active: true,
-      dateDepart: new Date('2024-06-15')
-    },
-    {
-      id: 2,
-      nom: 'Sahara Adventure',
-      destination: 'Merzouga',
-      description: 'Nuitée dans le désert et balade à dos de chameau',
-      duree: 3,
-      prix: 1799,
-      imageUrl: 'image2.jpg',
-      placesTotal: 15,
-      placesRestantes: 3,
-      active: true,
-      dateDepart: new Date('2024-06-20')
-    },
-    {
-      id: 3,
-      nom: 'Côte Atlantique',
-      destination: 'Essaouira',
-      description: 'Détente sur les plages et découverte de la médina',
-      duree: 4,
-      prix: 2199,
-      imageUrl: 'image3.jpg',
-      placesTotal: 18,
-      placesRestantes: 12,
-      active: true,
-      dateDepart: new Date('2024-07-10')
-    },
-    {
-      id: 4,
-      nom: 'Montagnes du Rif',
-      destination: 'Chefchaouen',
-      description: 'Randonnée dans les montagnes bleues',
-      duree: 6,
-      prix: 2899,
-      imageUrl: 'image4.jpg',
-      placesTotal: 12,
-      placesRestantes: 2,
-      active: false,
-      dateDepart: new Date('2024-08-05')
-    }
-  ];
-
-  constructor(private route: ActivatedRoute, private router: Router) {}
+export class TripDetailComponent implements OnInit, OnDestroy {
+  trip: any = null;
+  loading = true;
+  private routeSub!: Subscription;
+  
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private circuitService: CircuitService
+  ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const tripId = Number(params.get('id'));
-      if (tripId) {
-        this.loadTrip(tripId);
+    // Subscribe to route parameter changes
+    this.routeSub = this.route.params.subscribe(params => {
+      const id = params['id'];
+      console.log('Route ID received:', id); // Debug log
+      if (id) {
+        this.loadTrip(parseInt(id));
+      } else {
+        this.closeSidebar();
       }
     });
   }
 
   loadTrip(id: number): void {
-    this.trip = this.allTrips.find(t => t.id === id) || null;
+    this.loading = true;
+    this.circuitService.getCircuitById(id).subscribe({
+      next: (circuit) => {
+        console.log('Circuit loaded from backend:', circuit); // Debug log
+        this.mapCircuitToTrip(circuit);
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading trip:', err);
+        this.loading = false;
+        alert('Erreur lors du chargement du circuit');
+        this.closeSidebar();
+      }
+    });
+  }
 
-    if (!this.trip) {
-      console.warn('Trip not found with id:', id);
+  mapCircuitToTrip(circuit: any): void {
+    // Calculate duration in days
+    let duration = 0;
+    if (circuit.dateDepart && circuit.dateArrive) {
+      const start = new Date(circuit.dateDepart);
+      const end = new Date(circuit.dateArrive);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    this.trip = {
+      id: circuit.id,
+      nom: circuit.distination || 'Circuit sans nom',
+      destination: circuit.distination || '',
+      description: circuit.description || 'Aucune description',
+      duree: duration,
+      prix: circuit.prix || 0,
+      imageUrl: circuit.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image',
+      placesTotal: circuit.nb_places || 0,
+      placesRestantes: circuit.nb_places || 0,
+      active: true,
+      dateDepart: circuit.dateDepart ? new Date(circuit.dateDepart) : new Date(),
+      dateArrive: circuit.dateArrive ? new Date(circuit.dateArrive) : null
+    };
+    
+    console.log('Mapped trip for display:', this.trip); // Debug log
+  }
+
+  editTrip(): void {
+    if (this.trip?.id) {
+      this.router.navigate(['/admin/trips/edit', this.trip.id]);
+    }
+  }
+
+  deleteTrip(): void {
+    if (this.trip?.id && confirm('Êtes-vous sûr de vouloir supprimer ce circuit ?')) {
+      // You'll need to add delete method to CircuitService
+      // For now, let's just show an alert
+      alert('Fonction de suppression à implémenter dans CircuitService');
       this.closeSidebar();
     }
   }
@@ -108,17 +100,9 @@ export class TripDetailComponent implements OnInit {
     this.router.navigate(['/admin/trips']);
   }
 
-  editTrip(): void {
-  if (this.trip) {
-    this.router.navigate(['/admin/trips/edit', this.trip.id]);
-  }
-}
-
-
-  deleteTrip(): void {
-    if (this.trip && confirm(`Êtes-vous sûr de vouloir supprimer le circuit "${this.trip.nom}" ?`)) {
-      console.log('Deleting trip:', this.trip.id);
-      this.closeSidebar();
+  ngOnDestroy(): void {
+    if (this.routeSub) {
+      this.routeSub.unsubscribe();
     }
   }
 }

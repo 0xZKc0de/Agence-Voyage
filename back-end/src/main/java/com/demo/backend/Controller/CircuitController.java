@@ -68,4 +68,12 @@ public class CircuitController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getCircuitsCount() {
+        long count = circuitService.getCircuitsCount();
+        return ResponseEntity.ok(count);
+    }
+
+
 }

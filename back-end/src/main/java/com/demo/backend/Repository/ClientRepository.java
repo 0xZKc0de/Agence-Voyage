@@ -13,4 +13,5 @@ public interface ClientRepository extends JpaRepository<Client, Integer> {
     boolean existsByPhone(String phone);
     @Query("SELECT c FROM Client c ORDER BY SIZE(c.reservations) DESC")
     List<Client> findTopClients(org.springframework.data.domain.Pageable pageable);
+
 }
