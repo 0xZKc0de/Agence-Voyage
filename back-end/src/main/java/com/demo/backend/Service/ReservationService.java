@@ -116,4 +116,13 @@ public class ReservationService {
         String currentEmail = authentication.getName();
         return reservationRepository.findByClientEmail(currentEmail);
     }
+
+    public double getTotalRevenue() {
+        List<Reservation> reservations = reservationRepository.findAll();
+
+        return reservations.stream()
+                .filter(res -> res.getCircuit() != null) // skip reservations without a circuit
+                .mapToDouble(res -> res.getNbPersons() * res.getCircuit().getPrix())
+                .sum();
+    }
 }

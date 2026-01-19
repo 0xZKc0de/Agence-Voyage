@@ -1,5 +1,6 @@
 package com.demo.backend.Controller;
 
+import com.demo.backend.DTO.ClientDTO;
 import com.demo.backend.Entity.Client;
 import com.demo.backend.Service.ClientService;
 import jakarta.servlet.http.HttpSession;
@@ -79,19 +80,24 @@ public class ClientController {
 
         return ResponseEntity.status(403).body("Accès refusé : Vous n'êtes pas autorisé à supprimer ce compte.");
     }
+
     @GetMapping("/count")
     public ResponseEntity<Long> getClientsCount() {
         return ResponseEntity.ok(clientService.getClientsCount());
     }
 
-    @GetMapping("/top")
-    public ResponseEntity<List<Client>> getTopClients(@RequestParam(defaultValue = "5") int limit) {
-        try {
-            List<Client> topClients = clientService.getTopClients(limit);
-            return ResponseEntity.ok(topClients);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
+
+    @GetMapping
+    public ResponseEntity<List<ClientDTO>> getAllClients() {
+        return ResponseEntity.ok(clientService.getAllClientsDTO());
     }
+
+    @GetMapping("/top")
+    public ResponseEntity<List<ClientDTO>> getTopClients(@RequestParam(defaultValue = "5") int limit) {
+        return ResponseEntity.ok(clientService.getTopClientsDTO(limit));
+    }
+
+
+
 
 }

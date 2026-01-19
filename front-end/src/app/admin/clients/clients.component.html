@@ -1,9 +1,7 @@
 <div class="clients-page">
-
   <!-- Header -->
   <div class="clients-header">
     <h2 class="clients-title">Liste des clients</h2>
-
     <div class="clients-filters">
       <input
         type="text"
@@ -23,46 +21,25 @@
           <th>Email</th>
           <th>Téléphone</th>
           <th>Réservations</th>
-          <th>Statut</th>
           <th>Action</th>
         </tr>
       </thead>
-
       <tbody>
-        <tr *ngFor="let client of filteredClients"
-            [class.inactive]="!client.active">
+        <tr *ngFor="let client of filteredClients">
           <td>#{{ client.id }}</td>
-          <td>{{ client.nom }}</td>
+          <td>{{ client.firstName }} {{ client.lastName }}</td>
           <td>{{ client.email }}</td>
-          <td>{{ client.telephone }}</td>
-          <td>{{ client.reservations }}</td>
-
+          <td>{{ client.phone }}</td>
+          <td>{{ client.reservationsCount }}</td>
           <td>
-            <span class="status"
-                  [class.active]="client.active"
-                  [class.inactive-status]="!client.active">
-              {{ client.active ? 'Actif' : 'Désactivé' }}
-            </span>
+            <button class="btn-delete" (click)="deleteClient(client)">Supprimer</button>
           </td>
-
-          <td>
-            <button class="btn-status"
-                    (click)="toggleStatus(client)">
-              {{ client.active ? 'Désactiver' : 'Activer' }}
-            </button>
-          </td>
-
         </tr>
 
-        <!-- Empty state -->
         <tr *ngIf="filteredClients.length === 0">
-          <td colspan="7" class="empty">
-            Aucun client trouvé
-          </td>
+          <td colspan="6" class="empty">Aucun client trouvé</td>
         </tr>
-
       </tbody>
     </table>
   </div>
-
 </div>

@@ -64,4 +64,8 @@ public class CircuitService {
                 .orElseThrow(() -> new RuntimeException("Circuit not found"));
         circuitRepository.delete(circuit);
     }
+
+    public long getCircuitsCount() {
+        return circuitRepository.count();
+    }
 }

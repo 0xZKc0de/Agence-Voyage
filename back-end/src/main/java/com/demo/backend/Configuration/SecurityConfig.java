@@ -36,6 +36,8 @@ public class SecurityConfig {
                         // 1. السماح بكافة عمليات الحجز (إنشاء، عرض، إلخ)
                         .requestMatchers("/api/reservations/**").permitAll()
 
+                        .requestMatchers("/api/clients/**").permitAll()
+
                         // 2. السماح بكافة عمليات PayPal (إنشاء الدفع، التأكيد)
                         .requestMatchers("/api/paypal/**").permitAll()
 
