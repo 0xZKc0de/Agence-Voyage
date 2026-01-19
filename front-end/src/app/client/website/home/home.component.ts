@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../../services/auth.service'; // Assurez-vous que le chemin est correct
 
 interface Circuit {
   id: number;
@@ -24,17 +25,26 @@ interface Circuit {
 export class HomeComponent implements OnInit {
   featuredCircuits: Circuit[] = [];
   isLoading = true;
+  isLoggedIn = false; // Variable pour suivre l'état de connexion
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService // Injection du service d'authentification
+  ) {}
 
   ngOnInit() {
-    // À remplacer par votre API réelle
+    // 1. S'abonner à l'état de l'utilisateur pour mettre à jour l'interface en temps réel
+    this.authService.currentUser$.subscribe(user => {
+      this.isLoggedIn = !!user; // true si utilisateur connecté, false sinon
+    });
+
+    // 2. Charger les circuits (Code existant)
     this.loadFeaturedCircuits();
   }
 
   loadFeaturedCircuits() {
     this.isLoading = true;
-    // Exemple de données - à remplacer par l'appel API
+    // Données statiques pour l'exemple (à remplacer par votre appel API)
     this.featuredCircuits = [
       {
         id: 1,
@@ -55,17 +65,7 @@ export class HomeComponent implements OnInit {
         duree: 4,
         imageUrl: 'image2.jpg',
         placesRestantes: 5
-      },
-      {
-        id: 3,
-        nom: 'Côte Atlantique',
-        destination: 'Essaouira',
-        description: 'Détente au bord de l\'océan',
-        prix: 1599,
-        duree: 5,
-        imageUrl: 'image3.jpg',
-        placesRestantes: 12
-      },
+      }
     ];
     this.isLoading = false;
   }

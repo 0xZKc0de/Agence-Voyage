@@ -1,102 +1,121 @@
 <div class="reservations-page">
+
   <div class="reservations-header">
     <div class="header-left">
       <h2>Mes Réservations</h2>
-      <p>Gérez vos voyages et suivez leur statut</p>
+      <p>Suivez l'état de vos voyages en temps réel</p>
     </div>
-    <div class="header-right">
-      <button class="btn-new-reservation" routerLink="/client/circuits">
-        + Nouvelle réservation
+    <button class="btn-new-reservation" routerLink="/client/circuits">
+      <span>+</span> Réserver un voyage
+    </button>
+  </div>
+
+  <div class="stats-overview">
+    <div class="stat-item">
+      <span class="stat-label">Total</span>
+      <span class="stat-number">{{ totalReservations }}</span>
+    </div>
+    <div class="stat-item highlight">
+      <span class="stat-label">En attente</span>
+      <span class="stat-number">{{ pendingReservations }}</span>
+    </div>
+  </div>
+
+  <div class="controls-bar">
+    <div class="status-tabs">
+      <button
+        class="tab-btn"
+        [class.active]="statusFilter === ''"
+        (click)="setFilter('')">
+        Tout
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="statusFilter === 'PENDING'"
+        (click)="setFilter('PENDING')">
+        En attente
+        <span class="tab-badge" *ngIf="pendingReservations > 0">{{ pendingReservations }}</span>
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="statusFilter === 'CONFIRMED'"
+        (click)="setFilter('CONFIRMED')">
+        Confirmées
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="statusFilter === 'CANCELLED'"
+        (click)="setFilter('CANCELLED')">
+        Annulées
       </button>
     </div>
-  </div>
 
-  <div class="stats-container">
-    <div class="stat-card">
-      <div class="stat-value">{{ totalReservations }}</div>
-      <div class="stat-label">Total Réservations</div>
-    </div>
-    <div class="stat-card warning">
-      <div class="stat-value">{{ pendingReservations }}</div>
-      <div class="stat-label">En attente</div>
-    </div>
-  </div>
-
-  <div class="filters-section">
-    <div class="search-box">
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
       <input
         type="text"
-        placeholder="Rechercher par destination..."
+        placeholder="Rechercher une destination..."
         [(ngModel)]="searchTerm"
         (ngModelChange)="filterReservations()"
         class="search-input"
       >
     </div>
-    <div class="filter-options">
-      <select [(ngModel)]="statusFilter" (ngModelChange)="filterReservations()" class="filter-select">
-        <option value="">Tous les statuts</option>
-        <option value="PENDING">En attente</option>
-        <option value="CONFIRMED">Confirmée</option>
-        <option value="CANCELLED">Annulée</option>
-      </select>
-
-      <button *ngIf="searchTerm || statusFilter" (click)="clearFilters()" class="btn-clear">
-        Effacer filtres
-      </button>
-    </div>
   </div>
 
-  <div *ngIf="isLoading" class="loading-state">
-    <div class="spinner"></div> Chargement...
-  </div>
-
-  <div class="table-responsive" *ngIf="!isLoading && filteredReservations.length > 0">
+  <div class="table-container">
     <table class="reservations-table">
       <thead>
       <tr>
         <th>N°</th>
         <th>Destination</th>
         <th>Date</th>
-        <th>Voyageurs</th>
+        <th>Personnes</th>
         <th>Prix Total</th>
         <th>Statut</th>
-        <th>Actions</th>
+        <th class="text-right">Actions</th>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let res of filteredReservations">
-        <td>#{{ res.id }}</td>
+        <td class="res-id">#{{ res.id }}</td>
 
-        <td>
-          <strong>{{ res.circuit?.destination || res.circuit?.distination || 'Circuit Inconnu' }}</strong>
+        <td class="res-destination">
+          <div class="dest-wrapper">
+            <div class="dest-icon">✈️</div>
+            <span>{{ res.circuit?.destination || res.circuit?.distination || 'Circuit Inconnu' }}</span>
+          </div>
         </td>
 
-        <td>{{ res.date | date:'dd/MM/yyyy' }}</td>
-        <td>{{ res.nbPersons }} pers.</td>
+        <td class="res-date">{{ res.date | date:'dd MMM yyyy' }}</td>
 
-        <td class="price">{{ calculatePrice(res) }} DH</td>
+        <td class="res-persons">
+          <span class="person-badge">{{ res.nbPersons }}</span>
+        </td>
+
+        <td class="res-price">{{ calculatePrice(res) | number }} DH</td>
 
         <td>
-            <span class="badge" [class]="getStatusBadgeClass(res.status)">
+            <span class="status-pill" [class]="getStatusBadgeClass(res.status)">
+              <span class="dot"></span>
               {{ getStatusText(res.status) }}
             </span>
         </td>
 
-        <td class="actions">
+        <td class="actions text-right">
           <button
             *ngIf="res.status !== 'CANCELLED'"
             (click)="cancelReservation(res)"
-            class="btn-icon cancel"
-            title="Annuler la réservation">
-            ❌ Annuler
+            class="action-btn cancel"
+            title="Annuler">
+            ✕
           </button>
 
           <button
             *ngIf="res.status === 'PENDING'"
             (click)="processPayment(res)"
-            class="btn-icon pay"
-            title="Payer maintenant">
-            💳 Payer
+            class="action-btn pay"
+            title="Payer">
+            💳
           </button>
         </td>
       </tr>
@@ -105,7 +124,13 @@
   </div>
 
   <div *ngIf="!isLoading && filteredReservations.length === 0" class="empty-state">
+    <div class="empty-icon">📂</div>
     <h3>Aucune réservation trouvée</h3>
-    <p>Vous n'avez pas encore réservé de voyage ou aucun résultat ne correspond à votre recherche.</p>
+    <p>Vous n'avez pas de réservations dans cette catégorie.</p>
+    <button class="btn-text" (click)="clearFilters()">Voir toutes les réservations</button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
   </div>
 </div>

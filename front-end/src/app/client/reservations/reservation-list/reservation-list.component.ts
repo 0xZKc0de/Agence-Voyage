@@ -4,29 +4,17 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ReservationService } from '../../../services/reservation.service';
 
-// تعريف الواجهة بناءً على كلاس Java Reservation
-// تأكدنا هنا أن الحقول تطابق ما يرسله الباك-إند (JSON)
 export interface Reservation {
   id: number;
-  date: string; // أو dateReservation حسب التسمية في JSON
+  date: string;
   nbPersons: number;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED'; // الحالة كما هي في قاعدة البيانات
-  prixTotal?: number; // إذا كان الباك إند يحسبه ويرسله
-
-  // العلاقات المتداخلة (Nested Objects)
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
+  prixTotal?: number;
   circuit?: {
     id: number;
-    destination: string; // انتبه: قد تكون distination حسب الخطأ الإملائي في الباك إند
+    destination: string; // التعامل مع الخطأ الإملائي المحتمل في الباك إند
     distination?: string;
-    nom?: string;
     prix: number;
-  };
-  client?: {
-    nom: string;
-    email: string;
-  };
-  payment?: {
-    status: string;
   };
 }
 
@@ -41,10 +29,12 @@ export class ReservationListComponent implements OnInit {
   reservations: Reservation[] = [];
   filteredReservations: Reservation[] = [];
   isLoading = true;
-  searchTerm = '';
-  statusFilter = '';
 
-  // إحصائيات
+  // Search & Filter
+  searchTerm: string = '';
+  statusFilter: string = ''; // '' = All
+
+  // Stats
   totalReservations = 0;
   pendingReservations = 0;
 
@@ -61,67 +51,34 @@ export class ReservationListComponent implements OnInit {
     this.isLoading = true;
     this.reservationService.getMyReservations().subscribe({
       next: (data: any[]) => {
-        console.log('Reservations loaded:', data); // للفحص
         this.reservations = data;
-        this.filteredReservations = data;
         this.calculateStats();
+        this.filterReservations(); // Apply initial filters
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Error loading reservations:', err);
+        console.error('Erreur chargement réservations', err);
         this.isLoading = false;
       }
     });
   }
 
-  // --- دالة الإلغاء ---
-  cancelReservation(reservation: Reservation) {
-    if (!confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')) {
-      return;
-    }
-
-    // استدعاء السيرفس
-    this.reservationService.cancelReservation(reservation.id).subscribe({
-      next: (updatedRes) => {
-        // تحديث الحالة محلياً لكي يرى المستخدم التغيير فوراً
-        reservation.status = 'CANCELLED';
-
-        // إعادة حساب الإحصائيات وتطبيق الفلتر
-        this.calculateStats();
-        alert('La réservation a été annulée avec succès.');
-      },
-      error: (err) => {
-        console.error('Cancellation error:', err);
-        alert("Erreur: Impossible d'annuler cette réservation.");
-      }
-    });
+  // دالة جديدة لتفعيل التبويبات
+  setFilter(status: string) {
+    this.statusFilter = status;
+    this.filterReservations();
   }
-
-  // --- دالة الدفع ---
-  processPayment(reservation: Reservation) {
-    // نستخدم ID الحجز لإنشاء رابط الدفع في PayPal
-    // يمكننا توجيه المستخدم لصفحة وسيطة أو استدعاء الدفع مباشرة
-    this.router.navigate(['/client/payment-success'], {
-      queryParams: { resId: reservation.id }
-      // ملاحظة: هنا نفترض أنك تريد إعادة محاولة الدفع
-      // الأفضل عادة هو إعادة توجيهه لصفحة تنشئ رابط PayPal جديد
-    });
-
-    // أو إذا كان لديك صفحة تفاصيل تعرض زر الدفع:
-    // this.router.navigate(['/client/reservations', reservation.id]);
-  }
-
 
   filterReservations() {
     this.filteredReservations = this.reservations.filter(res => {
-      const destination = res.circuit?.destination || res.circuit?.distination || '';
-
+      // 1. Search Logic
+      const dest = res.circuit?.destination || res.circuit?.distination || '';
       const matchesSearch = !this.searchTerm ||
-        destination.toLowerCase().includes(this.searchTerm.toLowerCase());
+        dest.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        res.id.toString().includes(this.searchTerm);
 
-      // البحث بالحالة
-      const matchesStatus = !this.statusFilter ||
-        res.status === this.statusFilter;
+      // 2. Status Logic
+      const matchesStatus = !this.statusFilter || res.status === this.statusFilter;
 
       return matchesSearch && matchesStatus;
     });
@@ -129,8 +86,7 @@ export class ReservationListComponent implements OnInit {
 
   clearFilters() {
     this.searchTerm = '';
-    this.statusFilter = '';
-    this.filteredReservations = [...this.reservations];
+    this.setFilter('');
   }
 
   calculateStats() {
@@ -138,7 +94,13 @@ export class ReservationListComponent implements OnInit {
     this.pendingReservations = this.reservations.filter(r => r.status === 'PENDING').length;
   }
 
-  // تحويل الحالة الإنجليزية (DB) إلى فرنسية (UI)
+  // Helpers UI
+  calculatePrice(res: Reservation): number {
+    if (res.prixTotal) return res.prixTotal;
+    const pricePerPerson = res.circuit?.prix || 0;
+    return pricePerPerson * res.nbPersons;
+  }
+
   getStatusText(status: string): string {
     switch (status) {
       case 'CONFIRMED': return 'Confirmée';
@@ -157,11 +119,17 @@ export class ReservationListComponent implements OnInit {
     }
   }
 
-  calculatePrice(res: Reservation): number {
-    if (res.prixTotal) return res.prixTotal;
-    if (res.circuit && res.circuit.prix) {
-      return res.circuit.prix * res.nbPersons;
+  // Actions
+  cancelReservation(res: Reservation) {
+    if(confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')) {
+      this.reservationService.cancelReservation(res.id).subscribe(() => {
+        this.loadReservations(); // Refresh list
+      });
     }
-    return 0;
+  }
+
+  processPayment(res: Reservation) {
+    // Logic for payment (TBD)
+    console.log('Processing payment for', res.id);
   }
 }

@@ -1,5 +1,4 @@
 <div class="home-page">
-  <!-- HERO SECTION -->
   <section class="hero-section">
     <div class="hero-content">
       <h1>Découvrez le Monde avec Nous</h1>
@@ -7,21 +6,27 @@
         Des voyages inoubliables, des expériences authentiques,
         des souvenirs qui durent toute une vie
       </p>
+
       <div class="hero-buttons">
         <a routerLink="/client/circuits" class="btn-hero-primary">
           Voir nos circuits
         </a>
-        <a routerLink="/auth/register" class="btn-hero-secondary">
+
+        <a *ngIf="!isLoggedIn" routerLink="/auth/register" class="btn-hero-secondary">
           Créer un compte
+        </a>
+
+        <a *ngIf="isLoggedIn" routerLink="/client/reservations" class="btn-hero-secondary">
+          Mes Réservations
         </a>
       </div>
     </div>
+
     <div class="hero-image">
       <img src="picture.jpg" alt="Voyage">
     </div>
   </section>
 
-  <!-- FEATURED CIRCUITS -->
   <section class="featured-section">
     <div class="section-header">
       <h2>Circuits Populaires</h2>
@@ -36,32 +41,20 @@
             {{ circuit.prix | currency:'MAD ' }}
           </div>
         </div>
-        <div class="circuit-info">
+        <div class="circuit-content">
           <h3>{{ circuit.nom }}</h3>
-          <p class="circuit-destination">📍 {{ circuit.destination }}</p>
-          <p class="circuit-description">{{ circuit.description }}</p>
+          <p class="destination">📍 {{ circuit.destination }}</p>
           <div class="circuit-details">
-            <span class="circuit-duration">⏱️ {{ circuit.duree }} jours</span>
-            <span class="circuit-places"
-                  [class.low]="circuit.placesRestantes <= 3">
-              🏷️ {{ circuit.placesRestantes }} places
-            </span>
+            <span>⏱️ {{ circuit.duree }} Jours</span>
+            <span>👥 {{ circuit.placesRestantes }} places</span>
           </div>
-          <button class="btn-circuit-details"
-                  [routerLink]="['/client/circuits', circuit.id]">
-            Voir détails
-          </button>
+          <a [routerLink]="['/client/circuits']" class="btn-card">Détails</a>
         </div>
       </div>
     </div>
-
-    <div class="loading-spinner" *ngIf="isLoading">
-      Chargement des circuits...
-    </div>
   </section>
 
-  <!-- WHY CHOOSE US -->
-  <section class="why-us-section">
+  <section class="features-section">
     <div class="section-header">
       <h2>Pourquoi Nous Choisir ?</h2>
     </div>
@@ -93,18 +86,21 @@
     </div>
   </section>
 
-  <!-- CTA SECTION -->
   <section class="cta-section">
     <div class="cta-content">
-      <h2>Prêt pour l'aventure ?</h2>
-      <p>Inscrivez-vous et Bénéficiez de 10% de réduction sur votre première réservation ! Profitez-en dès maintenant pour vivre une aventure inoubliable tout en économisant !</p>
+      <h2 *ngIf="!isLoggedIn">Prêt pour l'aventure ?</h2>
+      <h2 *ngIf="isLoggedIn">Bon retour parmi nous !</h2>
+
+      <p *ngIf="!isLoggedIn">Inscrivez-vous et Bénéficiez de 10% de réduction sur votre première réservation !</p>
+      <p *ngIf="isLoggedIn">Explorez nos nouvelles destinations et réservez votre prochain voyage dès maintenant.</p>
+
       <div class="cta-buttons">
-        <a routerLink="/client/circuits" class="btn-cta-secondary">
-          Explorer les Circuits
-        </a>
-         <a routerLink="/auth/register" class="btn-cta-secondary">
-          S'inscrire Maintenant
-        </a>
+        <ng-container *ngIf="!isLoggedIn">
+          <a routerLink="/auth/register" class="btn-cta-primary">S'inscrire Maintenant</a>
+          <a routerLink="/auth/login" class="btn-cta-secondary">Connexion</a>
+        </ng-container>
+
+        <a *ngIf="isLoggedIn" routerLink="/client/circuits" class="btn-cta-primary">Réserver Maintenant</a>
       </div>
     </div>
   </section>

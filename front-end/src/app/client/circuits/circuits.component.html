@@ -1,108 +1,62 @@
-<div class="circuits-page" [class.sidebar-active]="hasActiveChild">
+<div class="circuits-page">
   <div class="circuits-header">
     <h2 class="circuits-title">Nos Circuits</h2>
 
     <div class="circuits-header-actions">
       <input
         type="text"
-        placeholder="Rechercher un circuit..."
+        placeholder="Rechercher..."
         [(ngModel)]="searchTerm"
-        (ngModelChange)="filterTrips()"
         class="search-input"
       />
 
       <div class="filter-options">
-        <select
-          class="filter-select"
-          [(ngModel)]="selectedDestination"
-          (ngModelChange)="filterTrips()"
-        >
+        <select class="filter-select" [(ngModel)]="selectedDestination">
           <option value="">Toutes destinations</option>
-          <option *ngFor="let destination of destinations" [value]="destination">
-            {{ destination }}
-          </option>
+          <option *ngFor="let dest of destinations" [value]="dest">{{ dest }}</option>
         </select>
-
-        <select
-          class="filter-select"
-          [(ngModel)]="selectedDuration"
-          (ngModelChange)="filterTrips()"
-        >
-          <option value="">Toutes durées</option>
-          <option *ngFor="let duration of durations" [value]="duration">
-            {{ duration }} jours{{ duration === '7' ? ' et plus' : '' }}
-          </option>
-        </select>
-
-        <button
-          class="btn-clear-filters"
-          (click)="clearFilters()"
-          *ngIf="selectedDestination || selectedDuration || searchTerm"
-        >
-          Effacer les filtres
-        </button>
       </div>
     </div>
   </div>
 
-  <div class="circuits-container">
-    <div class="loading-overlay" *ngIf="isLoading">
-      <div class="spinner"></div>
-      <p>Chargement des circuits...</p>
-    </div>
-
-    <div class="circuits-grid" *ngIf="!isLoading">
-      <div
-        class="circuit-card"
-        *ngFor="let circuit of filteredCircuits"
-        (click)="selectCircuit(circuit)"
-      >
-        <div class="circuit-image">
-          <img [src]="circuit.imageUrl" [alt]="circuit.distination">
-          <div class="circuit-price-tag">{{ circuit.prix | currency:'MAD ' }}</div>
-        </div>
-
-        <div class="circuit-content">
-          <div class="circuit-info-header">
-            <span class="circuit-dest">📍 {{ circuit.distination }}</span>
-            <span class="circuit-duration">⏱️ {{ circuit.duration }} jours</span>
-          </div>
-
-          <p class="circuit-description">{{ circuit.description }}</p>
-
-          <div class="circuit-details">
-            <div class="circuit-date">
-              🗓️ {{ circuit.dateDepart | date:'dd/MM/yyyy' }}
-            </div>
-            <div class="circuit-places">
-              🏷️ {{ circuit.nb_places }} places disponibles
-            </div>
-          </div>
-
-          <div class="circuit-actions">
-            <button class="btn-details" (click)="selectCircuit(circuit); $event.stopPropagation()">
-              Voir détails
-            </button>
-            <button class="btn-reserve"
-                    (click)="reserveCircuit(circuit); $event.stopPropagation()"
-                    [disabled]="circuit.nb_places === 0">
-              Réserver
-            </button>
-          </div>
-        </div>
+  <div class="circuits-grid">
+    <div class="circuit-card" *ngFor="let circuit of circuits">
+      <div class="circuit-image">
+        <img [src]="circuit.imageUrl || 'assets/default.jpg'" [alt]="circuit.distination">
+        <div class="circuit-price">{{ circuit.prix | number }} DH</div>
       </div>
-    </div>
 
-    <div class="no-circuits" *ngIf="!isLoading && filteredCircuits.length === 0">
-      <div class="no-circuits-content">
-        <div class="no-circuits-icon">🌍</div>
-        <h3>Aucun circuit trouvé</h3>
-        <p>Essayez avec d'autres critères de recherche</p>
+      <div class="circuit-content">
+        <div class="circuit-info-header">
+          <span class="circuit-dest">📍 {{ circuit.distination }}</span>
+          <span class="circuit-duration">⏱️ {{ circuit.duration }} jours</span>
+        </div>
+
+        <p class="circuit-description">{{ circuit.description }}</p>
+
+        <div class="circuit-details">
+          <div class="circuit-date">🗓️ {{ circuit.dateDepart | date:'dd/MM/yyyy' }}</div>
+          <div class="circuit-places">🏷️ {{ circuit.nb_places }} places</div>
+        </div>
+
+        <div class="circuit-actions">
+          <button class="btn-details" (click)="selectCircuit(circuit)">Détails</button>
+          <button class="btn-reserve"
+                  (click)="reserveCircuit(circuit)"
+                  [disabled]="circuit.nb_places === 0">
+            Réserver
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="circuits-sidebar-outlet" *ngIf="hasActiveChild">
-    <router-outlet></router-outlet>
+  <div class="loading-spinner" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Chargement de plus de circuits...</p>
+  </div>
+
+  <div class="end-message" *ngIf="isLastPage && circuits.length > 0">
+    <p>Vous avez tout vu !</p>
   </div>
 </div>

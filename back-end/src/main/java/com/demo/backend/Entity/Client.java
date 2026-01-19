@@ -33,7 +33,7 @@ public class Client {
     private String password;
 
     @Column(nullable = false, unique = true)
-    private String phone;
+    private String phone; 
 
     @Column(nullable = false)
     private String role = "ROLE_CLIENT";

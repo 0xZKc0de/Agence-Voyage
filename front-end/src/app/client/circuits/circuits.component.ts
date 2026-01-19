@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-// استيراد الخدمة بدلاً من HttpClient فقط
-import { CircuitService } from '../../services/circuit.service';
+import { HttpClient } from '@angular/common/http';
 
 interface Circuit {
   id: number;
@@ -26,94 +25,77 @@ interface Circuit {
 })
 export class CircuitsComponent implements OnInit {
   circuits: Circuit[] = [];
-  filteredCircuits: Circuit[] = [];
+  isLoading = false;
 
-  isLoading = true;
-  hasActiveChild = false;
+  currentPage = 0;
+  pageSize = 8;
+  isLastPage = false;
 
   searchTerm: string = '';
   selectedDestination: string = '';
   selectedDuration: string = '';
-
   destinations: string[] = [];
   durations: string[] = ['3', '5', '7', '10'];
 
   constructor(
-    private circuitService: CircuitService, // حقن الخدمة هنا
-    private router: Router,
-    private route: ActivatedRoute
+    private http: HttpClient,
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.loadCircuitsFromApi();
-
-    // مراقبة المسارات الفرعية (مثل صفحة التفاصيل)
-    this.route.url.subscribe(() => {
-      this.hasActiveChild = this.route.children.length > 0;
-    });
+    this.loadCircuits();
+    this.loadDestinations();
   }
 
-  loadCircuitsFromApi() {
+  loadCircuits() {
+    if (this.isLoading || this.isLastPage) return;
+
     this.isLoading = true;
 
-    // استخدام الخدمة بدلاً من http.get المباشر
-    this.circuitService.getCircuits().subscribe({
-      next: (data) => {
-        this.circuits = data;
-        this.filteredCircuits = [...this.circuits];
-        this.extractDestinations();
-        this.isLoading = false;
-        console.log('تم تحميل الرحلات بنجاح:', data);
-      },
-      error: (error) => {
-        console.error('فشل في تحميل الرحلات. تأكد من تسجيل الدخول:', error);
-        this.isLoading = false;
-        // إذا كان الخطأ 401 أو 403، يمكنك توجيه المستخدم لصفحة الدخول
-      }
-    });
+    this.http.get<any>(`http://localhost:8080/api/v1/circuits?page=${this.currentPage}&size=${this.pageSize}`)
+      .subscribe({
+        next: (response) => {
+          this.circuits = [...this.circuits, ...response.content];
+          this.isLastPage = response.last;
+          this.currentPage++;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error(err);
+          this.isLoading = false;
+        }
+      });
   }
 
-  extractDestinations() {
-    const uniqueDestinations = new Set(this.circuits.map(c => c.distination));
-    this.destinations = Array.from(uniqueDestinations).sort();
+  loadDestinations() {
+    this.http.get<string[]>('http://localhost:8080/api/v1/circuits/destinations')
+      .subscribe(data => this.destinations = data);
+  }
+
+  @HostListener('window:scroll', [])
+  onScroll(): void {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+      this.loadCircuits();
+    }
   }
 
   filterTrips() {
-    this.filteredCircuits = this.circuits.filter(circuit => {
-      const matchesSearch = !this.searchTerm ||
-        (circuit.distination?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          circuit.description?.toLowerCase().includes(this.searchTerm.toLowerCase()));
-
-      const matchesDest = !this.selectedDestination ||
-        circuit.distination === this.selectedDestination;
-
-      const matchesDuration = !this.selectedDuration ||
-        this.checkDuration(circuit.duration, this.selectedDuration);
-
-      return matchesSearch && matchesDest && matchesDuration;
-    });
-  }
-
-  private checkDuration(actual: number | undefined, selected: string): boolean {
-    if (actual === undefined) return false;
-    const dur = parseInt(selected);
-    return selected === '7' ? actual >= 7 : actual === dur;
+    // Note: Client-side filtering on loaded items only
   }
 
   clearFilters() {
     this.searchTerm = '';
     this.selectedDestination = '';
     this.selectedDuration = '';
-    this.filteredCircuits = [...this.circuits];
   }
 
   selectCircuit(circuit: Circuit) {
-    // التوجيه لصفحة تفاصيل الرحلة
     this.router.navigate(['/client/circuits', circuit.id]);
   }
 
   reserveCircuit(circuit: Circuit) {
-    // التوجيه لصفحة الحجز
-    this.router.navigate(['/client/reservations/create'], { queryParams: { circuitId: circuit.id } });
+    this.router.navigate(['/client/reservations/create'], {
+      queryParams: { circuitId: circuit.id }
+    });
   }
 }

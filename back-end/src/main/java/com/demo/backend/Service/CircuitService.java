@@ -3,6 +3,8 @@ package com.demo.backend.Service;
 import com.demo.backend.Entity.Circuit;
 import com.demo.backend.Repository.CircuitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,22 +16,22 @@ public class CircuitService {
     @Autowired
     private CircuitRepository circuitRepository;
 
-    // جلب جميع الرحلات
+    public Page<Circuit> getAllCircuits(int page, int size) {
+        return circuitRepository.findAll(PageRequest.of(page, size));
+    }
+
     public List<Circuit> findAll() {
         return circuitRepository.findAll();
     }
 
-    // جلب رحلة محددة بواسطة الـ ID
     public Optional<Circuit> findById(int id) {
         return circuitRepository.findById(id);
     }
 
-    // البحث حسب الوجهة
     public List<Circuit> findByDistination(String distination) {
         return circuitRepository.findByDistination(distination);
     }
 
-    // جلب قائمة الوجهات الفريدة (بدون تكرار)
     public List<String> getUniqueDestinations() {
         return circuitRepository.findAll()
                 .stream()
@@ -38,15 +40,13 @@ public class CircuitService {
                 .toList();
     }
 
-
     public Circuit addCircuit(Circuit circuit) {
         return circuitRepository.save(circuit);
     }
 
-
     public Circuit updateCircuit(int id, Circuit circuitDetails) {
         Circuit circuit = circuitRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Circuit not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Circuit not found"));
 
         circuit.setDistination(circuitDetails.getDistination());
         circuit.setPrix(circuitDetails.getPrix());
@@ -54,14 +54,14 @@ public class CircuitService {
         circuit.setDateArrive(circuitDetails.getDateArrive());
         circuit.setDescription(circuitDetails.getDescription());
         circuit.setImageUrl(circuitDetails.getImageUrl());
+        circuit.setNb_places(circuitDetails.getNb_places());
 
         return circuitRepository.save(circuit);
     }
 
-
     public void deleteCircuit(int id) {
         Circuit circuit = circuitRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Circuit not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Circuit not found"));
         circuitRepository.delete(circuit);
     }
 }
