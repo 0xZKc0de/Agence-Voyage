@@ -20,7 +20,7 @@
   </div>
 
   <div class="circuits-grid">
-    <div class="circuit-card" *ngFor="let circuit of circuits">
+    <div class="circuit-card" *ngFor="let circuit of circuits" (click)="selectCircuit(circuit)">
       <div class="circuit-image">
         <img [src]="circuit.imageUrl || 'assets/default.jpg'" [alt]="circuit.distination">
         <div class="circuit-price">{{ circuit.prix | number }} DH</div>
@@ -29,7 +29,7 @@
       <div class="circuit-content">
         <div class="circuit-info-header">
           <span class="circuit-dest">📍 {{ circuit.distination }}</span>
-          <span class="circuit-duration">⏱️ {{ circuit.duration }} jours</span>
+          <span class="circuit-duration">⏱️ {{ circuit.duration || 0 }} jours</span>
         </div>
 
         <p class="circuit-description">{{ circuit.description }}</p>
@@ -40,12 +40,7 @@
         </div>
 
         <div class="circuit-actions">
-          <button class="btn-details" (click)="selectCircuit(circuit)">Détails</button>
-          <button class="btn-reserve"
-                  (click)="reserveCircuit(circuit)"
-                  [disabled]="circuit.nb_places === 0">
-            Réserver
-          </button>
+          <button class="btn-details">Voir Détails</button>
         </div>
       </div>
     </div>
@@ -53,10 +48,5 @@
 
   <div class="loading-spinner" *ngIf="isLoading">
     <div class="spinner"></div>
-    <p>Chargement de plus de circuits...</p>
-  </div>
-
-  <div class="end-message" *ngIf="isLastPage && circuits.length > 0">
-    <p>Vous avez tout vu !</p>
   </div>
 </div>
