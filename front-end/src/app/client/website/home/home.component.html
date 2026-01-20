@@ -1,107 +1,98 @@
 <div class="home-page">
+
   <section class="hero-section">
+    <div class="hero-overlay"></div>
     <div class="hero-content">
-      <h1>Découvrez le Monde avec Nous</h1>
+      <span class="hero-badge">Exploration & Aventure</span>
+      <h1>Découvrez la Beauté <br> du Monde avec Nous</h1>
       <p class="hero-subtitle">
-        Des voyages inoubliables, des expériences authentiques,
-        des souvenirs qui durent toute une vie
+        Des itinéraires exclusifs, des guides passionnés et des souvenirs inoubliables.
+        Votre prochaine grande aventure commence ici.
       </p>
 
       <div class="hero-buttons">
         <a routerLink="/client/circuits" class="btn-hero-primary">
-          Voir nos circuits
+          Explorer les circuits
         </a>
-
         <a *ngIf="!isLoggedIn" routerLink="/auth/register" class="btn-hero-secondary">
-          Créer un compte
-        </a>
-
-        <a *ngIf="isLoggedIn" routerLink="/client/reservations" class="btn-hero-secondary">
-          Mes Réservations
+          Rejoindre le club
         </a>
       </div>
-    </div>
-
-    <div class="hero-image">
-      <img src="picture.jpg" alt="Voyage">
     </div>
   </section>
 
   <section class="featured-section">
-    <div class="section-header">
-      <h2>Circuits Populaires</h2>
-      <p>Nos voyages les plus appréciés par nos clients</p>
-    </div>
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Populaire</span>
+        <h2>Nos Coups de Cœur</h2>
+        <p>Une sélection de nos voyages les plus prisés par les voyageurs</p>
+      </div>
 
-    <div class="circuits-grid" *ngIf="!isLoading">
-      <div class="circuit-card" *ngFor="let circuit of featuredCircuits">
-        <div class="circuit-image">
-          <img [src]="circuit.imageUrl" [alt]="circuit.nom">
-          <div class="circuit-price">
-            {{ circuit.prix | currency:'MAD ' }}
+      <div class="loading-container" *ngIf="isLoading">
+        <div class="spinner"></div>
+      </div>
+
+      <div class="circuits-grid" *ngIf="!isLoading">
+        <div class="circuit-card" *ngFor="let circuit of featuredCircuits">
+          <div class="card-image">
+            <img [src]="circuit.imageUrl || 'assets/default-trip.jpg'" [alt]="circuit.distination">
+            <div class="price-tag">{{ circuit.prix | number }} DH</div>
+          </div>
+
+          <div class="card-content">
+            <div class="card-meta">
+              <span class="meta-item">⏱️ {{ circuit.duration }} Jours</span>
+              <span class="meta-item">👥 {{ circuit.nb_places }} Places</span>
+            </div>
+
+            <h3>{{ circuit.distination }}</h3>
+            <p>{{ circuit.description }}</p>
+
+            <a routerLink="/client/circuits" class="btn-card-link">
+              Voir les détails ➝
+            </a>
           </div>
         </div>
-        <div class="circuit-content">
-          <h3>{{ circuit.nom }}</h3>
-          <p class="destination">📍 {{ circuit.destination }}</p>
-          <div class="circuit-details">
-            <span>⏱️ {{ circuit.duree }} Jours</span>
-            <span>👥 {{ circuit.placesRestantes }} places</span>
-          </div>
-          <a [routerLink]="['/client/circuits']" class="btn-card">Détails</a>
-        </div>
+      </div>
+
+      <div class="view-all-container" *ngIf="!isLoading && featuredCircuits.length > 0">
+        <a routerLink="/client/circuits" class="btn-view-all">Voir tous les circuits</a>
       </div>
     </div>
   </section>
 
   <section class="features-section">
-    <div class="section-header">
-      <h2>Pourquoi Nous Choisir ?</h2>
-    </div>
-
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">✓</div>
-        <h3>Meilleurs Prix</h3>
-        <p>Garantie du meilleur prix pour tous nos circuits</p>
+    <div class="container features-grid">
+      <div class="feature-box">
+        <div class="feature-icon">✨</div>
+        <h3>Expériences Uniques</h3>
+        <p>Des parcours hors des sentiers battus pour une immersion totale.</p>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-icon">🏨</div>
-        <h3>Hébergement Premium</h3>
-        <p>Hôtels 4* et riads authentiques sélectionnés avec soin</p>
+      <div class="feature-box">
+        <div class="feature-icon">🛡️</div>
+        <h3>Voyagez Serein</h3>
+        <p>Assistance 24/7 et paiements entièrement sécurisés.</p>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-icon">👨‍✈️</div>
-        <h3>Guides Experts</h3>
-        <p>Guides francophones passionnés et expérimentés</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">🔒</div>
-        <h3>Réservation Sécurisée</h3>
-        <p>Paiement 100% sécurisé avec PayPal</p>
+      <div class="feature-box">
+        <div class="feature-icon">🏆</div>
+        <h3>Meilleurs Tarifs</h3>
+        <p>Le meilleur rapport qualité-prix garanti sur le marché.</p>
       </div>
     </div>
   </section>
 
   <section class="cta-section">
-    <div class="cta-content">
-      <h2 *ngIf="!isLoggedIn">Prêt pour l'aventure ?</h2>
-      <h2 *ngIf="isLoggedIn">Bon retour parmi nous !</h2>
-
-      <p *ngIf="!isLoggedIn">Inscrivez-vous et Bénéficiez de 10% de réduction sur votre première réservation !</p>
-      <p *ngIf="isLoggedIn">Explorez nos nouvelles destinations et réservez votre prochain voyage dès maintenant.</p>
-
-      <div class="cta-buttons">
-        <ng-container *ngIf="!isLoggedIn">
-          <a routerLink="/auth/register" class="btn-cta-primary">S'inscrire Maintenant</a>
-          <a routerLink="/auth/login" class="btn-cta-secondary">Connexion</a>
-        </ng-container>
-
-        <a *ngIf="isLoggedIn" routerLink="/client/circuits" class="btn-cta-primary">Réserver Maintenant</a>
+    <div class="cta-container">
+      <h2>Prêt à partir ?</h2>
+      <p>Inscrivez-vous maintenant et profitez d'offres exclusives.</p>
+      <div class="cta-actions">
+        <a *ngIf="!isLoggedIn" routerLink="/auth/register" class="btn-cta">Créer un compte</a>
+        <a *ngIf="isLoggedIn" routerLink="/client/circuits" class="btn-cta">Réserver maintenant</a>
       </div>
     </div>
   </section>
+
 </div>
