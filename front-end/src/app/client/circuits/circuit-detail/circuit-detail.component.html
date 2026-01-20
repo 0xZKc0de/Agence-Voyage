@@ -1,89 +1,84 @@
-<div class="side-panel">
-  <div class="panel-header">
-    <button class="btn-close" (click)="closeDetail()">
-      <span class="icon">✕</span>
-    </button>
-  </div>
+<div class="booking-backdrop" (click)="closeDetail()"></div>
 
-  <div class="loader-container" *ngIf="isLoading">
+<div class="booking-modal">
+
+  <button class="modal-close-btn" (click)="closeDetail()">
+    <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+
+  <div class="modal-loading" *ngIf="isLoading">
     <div class="spinner"></div>
-    <p>Chargement de votre expérience...</p>
   </div>
 
-  <div class="panel-body" *ngIf="circuit && !isLoading">
-    <div class="hero-image">
-      <img [src]="circuit.imageUrl" [alt]="circuit.distination">
-      <div class="price-badge">{{ circuit.prix | currency:'MAD ':'symbol':'1.0-0' }}</div>
+  <div class="modal-layout" *ngIf="circuit && !isLoading">
+
+    <div class="modal-gallery">
+      <img [src]="circuit.imageUrl || 'assets/default.jpg'" [alt]="circuit.distination">
+      <div class="gallery-overlay">
+        <span class="gallery-badge">⏱️ {{ getDuration() }} Jours d'évasion</span>
+      </div>
     </div>
 
-    <div class="content-wrapper">
-      <h1 class="title">Évasion à {{ circuit.distination }}</h1>
+    <div class="modal-content">
 
-      <div class="meta-grid">
-        <div class="meta-item">
-          <span class="meta-icon">⏱️</span>
-          <div class="meta-text">
-            <label>Durée</label>
-            <strong>{{ getDuration() }} Jours</strong>
+      <div class="content-header">
+        <span class="trip-category">Voyage Organisé</span>
+        <h1 class="trip-title">{{ circuit.distination }}</h1>
+        <div class="trip-meta-row">
+          <div class="meta-item">
+            <span class="icon">📅</span>
+            <span>{{ circuit.dateDepart | date:'dd MMM' }} - {{ circuit.dateArrive | date:'dd MMM yyyy' }}</span>
           </div>
-        </div>
-        <div class="meta-item">
-          <span class="meta-icon">👥</span>
-          <div class="meta-text">
-            <label>Disponibilité</label>
-            <strong>{{ circuit.nb_places }} places</strong>
+          <div class="meta-item">
+            <span class="icon">👥</span>
+            <span>{{ circuit.nb_places }} places disponibles</span>
           </div>
         </div>
       </div>
 
-      <div class="section">
-        <h3>À propos de ce voyage</h3>
-        <p class="description">{{ circuit.description }}</p>
+      <div class="content-body">
+        <p class="trip-description">{{ circuit.description }}</p>
       </div>
 
-      <div class="itinerary-preview">
-        <div class="date-card">
-          <div class="date-block">
-            <span>DÉPART</span>
-            <strong>{{ circuit.dateDepart | date:'dd MMM' }}</strong>
+      <div class="booking-engine">
+
+        <div class="engine-row">
+          <div class="label-group">
+            <span class="label-main">Voyageurs</span>
+            <span class="label-sub">Combien de personnes ?</span>
           </div>
-          <div class="date-arrow">➔</div>
-          <div class="date-block">
-            <span>RETOUR</span>
-            <strong>{{ circuit.dateArrive | date:'dd MMM' }}</strong>
+
+          <div class="participant-control">
+            <button (click)="decrement()" [disabled]="participants <= 1" class="ctrl-btn">−</button>
+            <span class="count">{{ participants }}</span>
+            <button (click)="increment()" [disabled]="participants >= circuit.nb_places" class="ctrl-btn">+</button>
           </div>
         </div>
-      </div>
 
-      <div class="booking-section" [class.active]="showReservationForm">
-        <button class="btn-primary" (click)="toggleReservation()" *ngIf="!showReservationForm">
-          Réserver cette aventure
+        <div class="engine-divider"></div>
+
+        <div class="engine-row total-row">
+          <div class="label-group">
+            <span class="label-main">Total estimé</span>
+            <span class="label-sub">Taxes incluses</span>
+          </div>
+          <span class="total-amount">{{ calculateTotal() | number }} <small>DH</small></span>
+        </div>
+
+        <button class="btn-book-now" (click)="proceedToReservation()">
+          <span class="btn-text">Réserver ma place</span>
+          <span class="btn-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </span>
         </button>
 
-        <div class="booking-form" *ngIf="showReservationForm">
-          <div class="form-header">
-            <h3>Votre réservation</h3>
-            <button class="btn-text" (click)="toggleReservation()">Annuler</button>
-          </div>
-
-          <div class="selector">
-            <span>Nombre de voyageurs</span>
-            <div class="counter">
-              <button (click)="decrement()" [disabled]="participants <= 1">−</button>
-              <span>{{ participants }}</span>
-              <button (click)="increment()" [disabled]="participants >= circuit.nb_places">+</button>
-            </div>
-          </div>
-
-          <div class="total-summary">
-            <div class="total-row">
-              <span>Total TTC</span>
-              <span class="final-price">{{ calculateTotal() | currency:'MAD ' }}</span>
-            </div>
-            <button class="btn-confirm">Confirmer la réservation</button>
-          </div>
-        </div>
       </div>
+
     </div>
+
   </div>
 </div>

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
-// تعريف بنية البيانات للرحلة
 interface Circuit {
   id: number;
   distination: string;
@@ -27,7 +26,6 @@ export class CircuitDetailComponent implements OnInit {
   circuit: Circuit | null = null;
   isLoading = true;
   participants = 1;
-  showReservationForm = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,30 +34,27 @@ export class CircuitDetailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // الحصول على معرف الرحلة من الرابط
     this.route.params.subscribe(params => {
       const id = params['id'];
       if (id) this.loadCircuit(id);
     });
   }
 
-  // جلب بيانات الرحلة من الـ Backend
   loadCircuit(id: number) {
     this.isLoading = true;
-    this.http.get<Circuit>(`http://localhost:8080/api/v1/circuits/get/${id}`)
-      .subscribe({
-        next: (data) => {
-          this.circuit = data;
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Erreur lors du chargement:', err);
-          this.isLoading = false;
-        }
-      });
+    this.http.get<Circuit>(`http://localhost:8080/api/v1/circuits/get/${id}`).subscribe({
+      next: (data) => {
+        this.circuit = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.isLoading = false;
+        this.closeDetail();
+      }
+    });
   }
 
-  // حساب مدة الرحلة بالأيام
   getDuration(): number {
     if (!this.circuit) return 0;
     const start = new Date(this.circuit.dateDepart);
@@ -68,13 +63,8 @@ export class CircuitDetailComponent implements OnInit {
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   }
 
-  // حساب السعر الإجمالي
   calculateTotal(): number {
     return (this.circuit?.prix || 0) * this.participants;
-  }
-
-  toggleReservation() {
-    this.showReservationForm = !this.showReservationForm;
   }
 
   closeDetail() {
@@ -82,30 +72,24 @@ export class CircuitDetailComponent implements OnInit {
     this.router.navigate(['/client/circuits']);
   }
 
-  // دالة لزيادة عدد المشاركين (مع التأكد من عدم تجاوز الأماكن المتاحة)
   increment() {
     if (this.participants < (this.circuit?.nb_places || 1)) {
       this.participants++;
     }
   }
 
-  // دالة لتقليل عدد المشاركين (بحد أدنى 1)
   decrement() {
     if (this.participants > 1) {
       this.participants--;
     }
   }
 
-  // دالة الحجز والانتقال لصفحة الدفع أو إكمال البيانات
-  reserveCircuit() {
-    // التأكد من أن العدد لا يتجاوز nb_places المعرف في الـ Interface
-    if (this.circuit && this.participants <= this.circuit.nb_places) {
+  proceedToReservation() {
+    if (this.circuit) {
       this.router.navigate(['/client/reservations/create'], {
         queryParams: {
           circuitId: this.circuit.id,
-          participants: this.participants,
-          prix: this.circuit.prix,
-          total: this.calculateTotal()
+          participants: this.participants
         }
       });
     }

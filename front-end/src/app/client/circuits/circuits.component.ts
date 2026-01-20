@@ -26,16 +26,12 @@ interface Circuit {
 export class CircuitsComponent implements OnInit {
   circuits: Circuit[] = [];
   isLoading = false;
-
   currentPage = 0;
   pageSize = 8;
   isLastPage = false;
-
   searchTerm: string = '';
   selectedDestination: string = '';
-  selectedDuration: string = '';
   destinations: string[] = [];
-  durations: string[] = ['3', '5', '7', '10'];
 
   constructor(
     private http: HttpClient,
@@ -55,9 +51,10 @@ export class CircuitsComponent implements OnInit {
     this.http.get<any>(`http://localhost:8080/api/v1/circuits?page=${this.currentPage}&size=${this.pageSize}`)
       .subscribe({
         next: (response) => {
-          this.circuits = [...this.circuits, ...response.content];
+          const newCircuits = response.content || [];
+          this.circuits = [...this.circuits, ...newCircuits];
           this.isLastPage = response.last;
-          this.currentPage++;
+          if(!this.isLastPage) this.currentPage++;
           this.isLoading = false;
         },
         error: (err) => {
@@ -79,23 +76,7 @@ export class CircuitsComponent implements OnInit {
     }
   }
 
-  filterTrips() {
-    // Note: Client-side filtering on loaded items only
-  }
-
-  clearFilters() {
-    this.searchTerm = '';
-    this.selectedDestination = '';
-    this.selectedDuration = '';
-  }
-
   selectCircuit(circuit: Circuit) {
     this.router.navigate(['/client/circuits', circuit.id]);
-  }
-
-  reserveCircuit(circuit: Circuit) {
-    this.router.navigate(['/client/reservations/create'], {
-      queryParams: { circuitId: circuit.id }
-    });
   }
 }
