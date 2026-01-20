@@ -1,108 +1,74 @@
-<!-- trips/trip-form/trip-form.component.html -->
 <div class="trip-form-sidebar">
   <div class="sidebar-header">
     <button class="btn-close" (click)="closeSidebar()">
-      <i class="icon-close"></i>
+      <i class="icon-close">×</i>
     </button>
     <h3>{{ isEditMode ? 'Modifier le circuit' : 'Nouveau circuit' }}</h3>
   </div>
-  
-  <form [formGroup]="tripForm" (ngSubmit)="onSubmit()" class="trip-form">
-    <div class="form-section">
-      <label for="nom">Nom du circuit *</label>
-      <input
-        type="text"
-        id="nom"
-        formControlName="nom"
-        placeholder="Ex: Marrakech Express"
-      />
-    </div>
-    
-    <div class="form-section">
-      <label for="destination">Destination *</label>
-      <input
-        type="text"
-        id="destination"
-        formControlName="destination"
-        placeholder="Ex: Marrakech"
-      />
-    </div>
-    
-    <div class="form-row">
+
+  <div class="sidebar-content">
+    <form [formGroup]="tripForm" (ngSubmit)="onSubmit()">
+
       <div class="form-section">
-        <label for="duree">Durée (jours) *</label>
+        <label>Destination</label>
         <input
-          type="number"
-          id="duree"
-          formControlName="duree"
-          min="1"
-        />
-      </div>
-      
-      <div class="form-section">
-        <label for="prix">Prix (MAD) *</label>
-        <input
-          type="number"
-          id="prix"
-          formControlName="prix"
-          min="0"
-        />
-      </div>
-    </div>
-    
-    <div class="form-row">
-      <div class="form-section">
-        <label for="placesTotal">Nombre de places *</label>
-        <input
-          type="number"
-          id="placesTotal"
-          formControlName="placesTotal"
-          min="1"
-        />
-      </div>
-      
-      <div class="form-section">
-        <label for="dateDepart">Date de départ *</label>
-        <input type="date" id="dateDepart" formControlName="dateDepart" />
+          type="text"
+          formControlName="destination"
+          placeholder="Ex: Marrakech, Paris..."
+          [class.error]="tripForm.get('destination')?.invalid && tripForm.get('destination')?.touched"
+        >
       </div>
 
-    </div>
-    
+      <div class="form-section">
+        <label>Description</label>
+        <textarea
+          formControlName="description"
+          rows="4"
+          placeholder="Description du voyage..."
+        ></textarea>
+      </div>
 
-    <div class="form-section">
-      <label for="imageUrl">URL de l'image</label>
-      <input
-        type="text"
-        id="imageUrl"
-        formControlName="imageUrl"
-        placeholder="Ajouter fichier"
-      />
-    </div>
-  
-    <div class="form-section">
-      <label for="description">Description *</label>
-      <textarea
-        id="description"
-        formControlName="description"
-        rows="4"
-        placeholder="Décrivez le circuit..."
-      ></textarea>
-    </div>
-    
-    <div class="form-section">
-      <label class="checkbox-label">
-        <input type="checkbox" formControlName="active" />
-        <span>Circuit actif</span>
-      </label>
-    </div>
-    
-    <div class="form-actions">
-      <button type="button" class="btn-cancel" (click)="closeSidebar()">
-        Annuler
-      </button>
-      <button type="submit" class="btn-submit" [disabled]="!tripForm.valid">
-        {{ isEditMode ? 'Mettre à jour' : 'Créer le circuit' }}
-      </button>
-    </div>
-  </form>
+      <div class="form-row">
+        <div class="form-section">
+          <label>Date de départ</label>
+          <input type="date" formControlName="dateDepart">
+        </div>
+
+        <div class="form-section">
+          <label>Durée (jours)</label>
+          <input type="number" formControlName="duree" min="1">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-section">
+          <label>Prix (DH)</label>
+          <input type="number" formControlName="prix" min="0">
+        </div>
+
+        <div class="form-section">
+          <label>Nombre de places</label>
+          <input type="number" formControlName="placesTotal" min="1">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <label>Image URL</label>
+        <input type="text" formControlName="imageUrl" placeholder="https://...">
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="closeSidebar()">Annuler</button>
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="tripForm.invalid || loading"
+          [class.loading]="loading"
+        >
+          {{ loading ? 'Enregistrement...' : (isEditMode ? 'Mettre à jour' : 'Créer le circuit') }}
+        </button>
+      </div>
+
+    </form>
+  </div>
 </div>

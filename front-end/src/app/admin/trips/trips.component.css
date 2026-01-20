@@ -1,20 +1,14 @@
-/* ================= RESET ================= */
-
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
 }
 
-/* ================= PAGE ================= */
-
 .trips-page {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   min-height: 100vh;
   background: #f9f7f3;
 }
-
-/* ================= HEADER ================= */
 
 .trips-header {
   display: flex;
@@ -24,6 +18,9 @@ html, body {
   border-bottom: 1px solid #e8dfca;
   background: #f9f7f3;
   transition: margin-right 0.3s ease;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .trips-title {
@@ -48,46 +45,38 @@ html, body {
   padding: 10px 16px;
   border-radius: 12px;
   border: 1px solid #e8dfca;
+  outline: none;
   font-size: 14px;
+  background: white;
 }
 
 .trips-header-actions input:focus {
-  outline: none;
   border-color: #a38f6d;
+  box-shadow: 0 0 0 3px rgba(163, 143, 109, 0.1);
 }
 
 .btn-add-trip {
-  background: #a38f6d;
+  padding: 10px 20px;
+  background: #5d534a;
   color: white;
   border: none;
-  padding: 10px 18px;
   border-radius: 12px;
-  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s;
   white-space: nowrap;
 }
 
 .btn-add-trip:hover {
-  background: #8b806b;
+  background: #4a4138;
 }
-
-/* ================= MAIN ================= */
 
 .trips-main-area {
-  display: flex;
-  min-height: 100vh;
-  position: relative;
-}
-
-/* ================= GRID ================= */
-
-.trips-grid-section {
-  flex: 1;
   padding: 24px;
   transition: margin-right 0.3s ease;
 }
 
-.trips-page.sidebar-active .trips-grid-section {
+.trips-page.sidebar-active .trips-main-area {
   margin-right: 420px;
 }
 
@@ -96,8 +85,6 @@ html, body {
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 24px;
 }
-
-/* ================= CARD ================= */
 
 .trip-card {
   background: white;
@@ -131,46 +118,52 @@ html, body {
 
 .trip-name {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   color: #5d534a;
-  margin-bottom: 8px;
+  margin: 0 0 8px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .trip-meta {
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  color: #8b806b;
+  color: #8a7f73;
 }
 
 .trip-places {
+  background: #f0ebe5;
+  padding: 2px 8px;
+  border-radius: 6px;
   font-weight: 600;
   color: #5d534a;
 }
 
-/* ================= SIDEBAR ================= */
-
-.trips-sidebar-outlet {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 420px;
-  height: 100vh;
-  background: white;
-  border-left: 1px solid #e8dfca;
-  box-shadow: -6px 0 20px rgba(139, 128, 107, 0.15);
-  z-index: 20;
-}
-
-/* ================= EMPTY ================= */
-
 .no-trips-message {
   text-align: center;
-  padding: 100px 20px;
-  color: #8b806b;
+  padding: 60px 0;
+  color: #8a7f73;
+  width: 100%;
 }
 
-.icon-trip::before {
-  content: "🏔️";
-  font-size: 42px;
+.loading-spinner-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  width: 100%;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #e8dfca;
+  border-top-color: #5d534a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

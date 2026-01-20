@@ -41,15 +41,14 @@ export class ReservationCreateComponent implements OnInit {
 
   loadCircuits() {
     this.isLoading = true;
-    this.circuitService.getCircuits().subscribe({
-      next: (data) => {
-        console.log('✅ Circuits chargés:', data);
-        this.circuits = data;
+    this.circuitService.getAllCircuits(0, 100).subscribe({
+      next: (data: any) => {
+        this.circuits = data.content || [];
         this.isLoading = false;
         this.checkUrlParams();
       },
-      error: (err) => {
-        console.error('❌ Erreur chargement circuits:', err);
+      error: (err: any) => {
+        console.error(err);
         this.isLoading = false;
       }
     });
@@ -102,29 +101,23 @@ export class ReservationCreateComponent implements OnInit {
       nbPersons: Number(formVal.participants)
     };
 
-    // 1. إنشاء الحجز
     this.reservationService.initiateReservation(request).subscribe({
       next: (res: any) => {
-        console.log('✅ Réservation créée avec succès. ID:', res.id);
-
-        // 🔥🔥🔥 حفظ رقم الحجز في الذاكرة (هذا هو الحل) 🔥🔥🔥
         localStorage.setItem('currentReservationId', res.id.toString());
 
-        // 2. طلب رابط الدفع
         this.paypalService.createPayment(res.id).subscribe({
           next: (link) => {
-            // التوجيه إلى PayPal
             window.location.href = link;
           },
           error: (e) => {
-            console.error("Erreur PayPal:", e);
+            console.error(e);
             alert("Impossible de connecter à PayPal.");
             this.isSubmitting = false;
           }
         });
       },
       error: (err) => {
-        console.error("Erreur Réservation:", err);
+        console.error(err);
         this.isSubmitting = false;
         alert("Une erreur est survenue lors de la réservation.");
       }

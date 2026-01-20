@@ -14,7 +14,7 @@ export class ClientsComponent implements OnInit {
 
   searchTerm: string = '';
   clients: ClientData[] = [];
-  loading: boolean = false; // optional: to show a spinner while loading
+  loading: boolean = false;
 
   constructor(private clientService: ClientService) {}
 
@@ -22,12 +22,10 @@ export class ClientsComponent implements OnInit {
     this.loadClients();
   }
 
-  // Load all clients
   loadClients() {
     this.loading = true;
     this.clientService.getAllClients().subscribe({
       next: (data: ClientData[]) => {
-        // Map to ensure all fields are defined
         this.clients = data.map(c => ({
           id: c.id,
           firstName: c.firstName,
@@ -40,13 +38,12 @@ export class ClientsComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Error loading clients', err);
+        console.error(err);
         this.loading = false;
       }
     });
   }
 
-  // Filter clients based on search term
   get filteredClients(): ClientData[] {
     const term = this.searchTerm.toLowerCase().trim();
     if (!term) return this.clients;
@@ -58,25 +55,18 @@ export class ClientsComponent implements OnInit {
     );
   }
 
-deleteClient(client: ClientData) {
-  if (!client.id) return;
+  deleteClient(client: ClientData) {
+    if (!client.id) return;
 
-  if (confirm(`Voulez-vous vraiment supprimer le client ${client.firstName} ${client.lastName} ?`)) {
-    this.clientService.deleteClient(client.id).subscribe({
-      next: () => {
-        console.log('Client deleted', client);
-        // Method 1: Reload from server (simplest)
-        this.loadClients();
-        
-        // Method 2: Remove locally and refresh filtered list
-        // this.clients = this.clients.filter(c => c.id !== client.id);
-        // Trigger change detection for the getter
-        // this.clients = [...this.clients]; // Creates new array reference
-      },
-      error: (err) => console.error('Error deleting client', err)
-    });
+    if (confirm(`Voulez-vous vraiment supprimer le client ${client.firstName} ${client.lastName} ?`)) {
+      this.clientService.deleteClient(client.id).subscribe({
+        next: () => {
+          this.clients = this.clients.filter(c => c.id !== client.id);
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      });
+    }
   }
-}
-
-
 }

@@ -1,6 +1,6 @@
 package com.demo.backend.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore; // مهم جداً لتجنب Infinite Recursion
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Entity
@@ -19,7 +18,7 @@ public class Circuit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private String distination;
@@ -28,7 +27,7 @@ public class Circuit {
     private Date dateDepart;
 
     @Column(nullable = false)
-    private int nb_places;
+    private Integer nb_places;
 
     @Column(nullable = false)
     private Date dateArrive;
@@ -39,6 +38,14 @@ public class Circuit {
     @Column(nullable = true)
     private String imageUrl;
 
+    @Column(nullable = false)
+    private Double prix;
+
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    @JsonIgnore
+    private Admin admin;
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public long getDuration() {
         if (dateDepart != null && dateArrive != null) {
@@ -47,17 +54,5 @@ public class Circuit {
         }
         return 0;
     }
-
-    @Column(nullable = false)
-    private double prix;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "circuit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Reservation> reservations;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "admin_id")
-    private Admin admin;
 
 }

@@ -19,49 +19,43 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
-    /**
-     * Récupérer les informations du profil de l'utilisateur connecté via la session.
-     */
+    // ✅ هذا الرابط هو المسؤول عن عرض القائمة في الفرونت إند
+    // سيعمل الآن لأن Service يعيد DTO وفيه Transactional
+    @GetMapping
+    public ResponseEntity<List<ClientDTO>> getAllClients() {
+        return ResponseEntity.ok(clientService.getAllClientsDTO());
+    }
+
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(HttpSession session) {
         Integer loggedUserId = (Integer) session.getAttribute("userId");
 
         if (loggedUserId == null) {
-            return ResponseEntity.status(401).body("Erreur : Vous devez être connecté pour accéder au profil.");
+            return ResponseEntity.status(401).body("Erreur : Vous devez être connecté.");
         }
 
         try {
             Optional<Client> client = clientService.findById(loggedUserId);
-            if (client.isPresent()) {
-                return ResponseEntity.ok(client.get());
-            } else {
-                return ResponseEntity.status(404).body("Erreur : Utilisateur non trouvé.");
-            }
+            return client.map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.status(404).build());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Erreur interne du serveur.");
+            return ResponseEntity.status(500).body("Erreur interne.");
         }
     }
 
-    /**
-     * Mettre à jour les données du client (Autorisé pour l'Admin ou le propriétaire du compte).
-     */
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateClient(@PathVariable int id, @RequestBody Client client, HttpSession session) {
         String role = (String) session.getAttribute("role");
         Integer loggedUserId = (Integer) session.getAttribute("userId");
 
-        // Vérification des droits : Admin ou le client lui-même
+        // السماح للأدمن أو صاحب الحساب فقط بالتعديل
         if (role != null && (role.equals("ROLE_ADMIN") || (role.equals("ROLE_CLIENT") && loggedUserId != null && loggedUserId == id))) {
-            client.setId(id);
             return ResponseEntity.ok(clientService.updateClient(id, client));
         }
 
-        return ResponseEntity.status(403).body("Accès refusé : Vous n'êtes pas autorisé à modifier ces données.");
+        return ResponseEntity.status(403).body("Accès refusé.");
     }
 
-    /**
-     * Supprimer le compte client (Autorisé pour l'Admin ou le propriétaire du compte).
-     */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteClient(@PathVariable int id, HttpSession session) {
         Integer loggedUserId = (Integer) session.getAttribute("userId");
@@ -70,15 +64,13 @@ public class ClientController {
         if (role != null && (role.equals("ROLE_ADMIN") || (role.equals("ROLE_CLIENT") && loggedUserId != null && loggedUserId == id))) {
             clientService.deleteClient(id);
 
-            // Si c'est le client qui supprime son propre compte, on invalide la session
             if (role.equals("ROLE_CLIENT")) {
-                session.invalidate();
+                session.invalidate(); // تسجيل خروج إذا حذف العميل حسابه بنفسه
             }
-
             return ResponseEntity.ok("Compte supprimé avec succès.");
         }
 
-        return ResponseEntity.status(403).body("Accès refusé : Vous n'êtes pas autorisé à supprimer ce compte.");
+        return ResponseEntity.status(403).body("Accès refusé.");
     }
 
     @GetMapping("/count")
@@ -86,18 +78,8 @@ public class ClientController {
         return ResponseEntity.ok(clientService.getClientsCount());
     }
 
-
-    @GetMapping
-    public ResponseEntity<List<ClientDTO>> getAllClients() {
-        return ResponseEntity.ok(clientService.getAllClientsDTO());
-    }
-
     @GetMapping("/top")
     public ResponseEntity<List<ClientDTO>> getTopClients(@RequestParam(defaultValue = "5") int limit) {
         return ResponseEntity.ok(clientService.getTopClientsDTO(limit));
     }
-
-
-
-
 }

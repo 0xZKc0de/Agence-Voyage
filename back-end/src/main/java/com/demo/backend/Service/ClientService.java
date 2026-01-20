@@ -6,9 +6,9 @@ import com.demo.backend.Entity.Client;
 import com.demo.backend.Repository.AdminRepository;
 import com.demo.backend.Repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,73 +26,67 @@ public class ClientService {
     private PasswordEncoder passwordEncoder;
 
     public Client registerNewClient(RegistrationRequest request) {
-        // 1. التحقق من تطابق كلمات المرور
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new RuntimeException("Passwords do not match!");
         }
-
-        // 2. التحقق من وجود البريد الإلكتروني مسبقاً
         if (clientRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email is already in use!");
         }
-
-        // 3. التحديث الجديد: التحقق من وجود رقم الهاتف مسبقاً لمنع خطأ Duplicate entry
-        // ملاحظة: تأكد من إضافة دالة existsByPhone في ملف ClientRepository
         if (clientRepository.existsByPhone(request.getPhone())) {
             throw new RuntimeException("Phone number is already in use!");
         }
 
         Client client = new Client();
-        client.setFirstName(request.getFirstName()); //
-        client.setLastName(request.getLastName());   //
-        client.setEmail(request.getEmail());         //
-        client.setPhone(request.getPhone());         //
-
-        // تشفير كلمة المرور قبل الحفظ
+        client.setFirstName(request.getFirstName());
+        client.setLastName(request.getLastName());
+        client.setEmail(request.getEmail());
+        client.setPhone(request.getPhone());
         client.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        // تعيين دور العميل
         client.setRole("ROLE_CLIENT");
-
-        // ربط العميل بالمسؤول (Admin) صاحب المعرف رقم 1
-        adminRepository.findById(1).ifPresent(client::setAdmin);
+        client.setAdmin(adminRepository.findById(1).orElse(null));
 
         return clientRepository.save(client);
     }
 
+    // 🔥 هذه الدالة كانت ناقصة، وتمت إضافتها لإصلاح الخطأ في Controller
     public Client updateClient(int id, Client clientDetails) {
-        Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found")); //
+        Client existingClient = clientRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
 
-        client.setFirstName(clientDetails.getFirstName()); //
-        client.setLastName(clientDetails.getLastName());   //
-        client.setPhone(clientDetails.getPhone());         //
+        existingClient.setFirstName(clientDetails.getFirstName());
+        existingClient.setLastName(clientDetails.getLastName());
+        existingClient.setPhone(clientDetails.getPhone());
+        existingClient.setEmail(clientDetails.getEmail());
+        // ملاحظة: لا نحدث كلمة المرور هنا لأسباب أمنية
 
-        return clientRepository.save(client);
+        return clientRepository.save(existingClient);
     }
 
     public void deleteClient(int id) {
-        Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found")); //
-        clientRepository.delete(client); //
+        if (!clientRepository.existsById(id)) {
+            throw new RuntimeException("Client not found!");
+        }
+        clientRepository.deleteById(id);
     }
 
-    public Optional<Client> findById(Integer loggedUserId) {
-        return clientRepository.findById(loggedUserId);
-    }
     public long getClientsCount() {
         return clientRepository.count();
     }
 
+    public Optional<Client> findById(int id) {
+        return clientRepository.findById(id);
+    }
 
+    // ✅ هذه الدالة ستضمن عمل القائمة في الفرونت إند بفضل Transactional
+    @Transactional(readOnly = true)
     public List<ClientDTO> getAllClientsDTO() {
         return clientRepository.findAll()
                 .stream()
-                .map(ClientDTO::new)  // <-- make sure this is used
+                .map(ClientDTO::new)
                 .toList();
     }
 
-    // Get top clients by total reservation amount
+    @Transactional(readOnly = true)
     public List<ClientDTO> getTopClientsDTO(int limit) {
         return clientRepository.findAll()
                 .stream()
@@ -104,20 +98,20 @@ public class ClientService {
                             .mapToDouble(r -> r.getNbPersons() * r.getCircuit().getPrix())
                             .sum()
                             : 0;
+
                     ClientDTO dto = new ClientDTO();
+                    dto.setId(client.getId());
                     dto.setFirstName(client.getFirstName());
                     dto.setLastName(client.getLastName());
+                    dto.setEmail(client.getEmail());
                     dto.setReservationsCount(resCount);
-                    dto.setTotalAmount(total); // only top clients need this
+                    dto.setTotalAmount(total);
                     return dto;
                 })
-                .sorted((a, b) -> Double.compare(b.getTotalAmount() != null ? b.getTotalAmount() : 0,
+                .sorted((a, b) -> Double.compare(
+                        b.getTotalAmount() != null ? b.getTotalAmount() : 0,
                         a.getTotalAmount() != null ? a.getTotalAmount() : 0))
                 .limit(limit)
                 .toList();
     }
-
-
-
-
 }

@@ -1,4 +1,3 @@
-// trips/trip-form/trip-form.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -31,91 +30,94 @@ export class TripFormComponent implements OnInit {
     // Determine if we are in edit mode
     this.route.params.subscribe(params => {
       const id = params['id'];
-      const urlSegments = this.router.url.split('/');
-      const lastSegment = urlSegments[urlSegments.length - 1];
 
-      if (id && lastSegment === 'edit') {
+      // Check if URL ends with 'edit' or simply has an ID
+      if (id && this.router.url.includes('/edit')) {
         this.isEditMode = true;
-        this.tripId = Number(id);
-        this.loadTripForEdit(this.tripId);
-      } else {
-        this.isEditMode = false;
+        this.tripId = +id; // Convert to number
+        this.loadTripData(this.tripId);
       }
     });
   }
 
   createForm(): FormGroup {
     return this.fb.group({
-      nom: ['', Validators.required],
       destination: ['', Validators.required],
-      description: ['', Validators.required],
+      description: [''],
       duree: [1, [Validators.required, Validators.min(1)]],
       prix: [0, [Validators.required, Validators.min(0)]],
-      placesTotal: [1, [Validators.required, Validators.min(1)]],
+      placesTotal: [10, [Validators.required, Validators.min(1)]],
       dateDepart: ['', Validators.required],
       imageUrl: ['']
     });
   }
 
-  loadTripForEdit(id: number): void {
+  loadTripData(id: number): void {
     this.loading = true;
     this.circuitService.getCircuitById(id).subscribe({
-      next: (circuit) => {
-        const formatDate = (dateString: string) => {
-          if (!dateString) return '';
-          const date = new Date(dateString);
-          return date.toISOString().split('T')[0];
-        };
-
-        // Calculate duration
-        let duration = 0;
-        if (circuit.dateDepart && circuit.dateArrive) {
-          const start = new Date(circuit.dateDepart);
-          const end = new Date(circuit.dateArrive);
-          const diffTime = Math.abs(end.getTime() - start.getTime());
-          duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      next: (data) => {
+        // Format date for input type="date" (YYYY-MM-DD)
+        let dateStr = '';
+        if (data.dateDepart) {
+          dateStr = new Date(data.dateDepart).toISOString().split('T')[0];
         }
 
-        // Patch the form
         this.tripForm.patchValue({
-          nom: circuit.distination || '',
-          destination: circuit.distination || '',
-          description: circuit.description || '',
-          duree: duration,
-          prix: circuit.prix || 0,
-          placesTotal: circuit.nb_places || 1,
-          dateDepart: formatDate(circuit.dateDepart),
-          imageUrl: circuit.imageUrl || ''
+          destination: data.distination, // Note: backend might use 'distination'
+          description: data.description,
+          duree: data.duration || 0, // Ensure duration is mapped
+          prix: data.prix,
+          placesTotal: data.nb_places,
+          dateDepart: dateStr,
+          imageUrl: data.imageUrl
         });
-
         this.loading = false;
       },
-      error: (err) => {
-        console.error('Error loading trip for edit:', err);
+      error: (err: any) => {
+        console.error('Error loading trip:', err);
         this.loading = false;
-        alert('Erreur lors du chargement du circuit');
+        // Optional: redirect back if not found
       }
     });
   }
 
   onSubmit(): void {
-    if (this.tripForm.invalid || this.loading) return;
+    console.log('Submit button clicked'); // Debug 1
+
+    if (this.tripForm.invalid) {
+      console.error('❌ Form is invalid:', this.tripForm.errors);
+      // Log errors for each control to see which one is failing
+      Object.keys(this.tripForm.controls).forEach(key => {
+        const controlErrors = this.tripForm.get(key)?.errors;
+        if (controlErrors) {
+          console.error(`Control: ${key}, Errors:`, controlErrors);
+        }
+      });
+      return;
+    }
 
     const formData = this.tripForm.value;
+    console.log('Form Data:', formData); // Debug 2
 
+    // Calculate Arrival Date based on Duration
     const startDate = new Date(formData.dateDepart);
+    const duration = Number(formData.duree); // Ensure number
     const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + formData.duree);
+    endDate.setDate(startDate.getDate() + duration);
 
+    // Prepare Payload
     const circuitData = {
-      distination: formData.destination,           // required
-      description: formData.description,           // optional
-      prix: formData.prix,                         // required
-      nb_places: formData.placesTotal,             // required
-      dateDepart: startDate.toISOString(),         // ISO format for backend
-      dateArrive: endDate.toISOString(),           // ISO format for backend
-      imageUrl: formData.imageUrl || null          // optional
+      distination: formData.destination,  // Map 'destination' form to 'distination' backend
+      description: formData.description,
+      prix: Number(formData.prix),        // Ensure number
+      nb_places: Number(formData.placesTotal), // Ensure number
+      duration: duration,                 // 🔥 ADDED: Send duration to backend
+      dateDepart: startDate.toISOString(),
+      dateArrive: endDate.toISOString(),
+      imageUrl: formData.imageUrl || null
     };
+
+    console.log('🚀 Payload sent to backend:', circuitData); // Debug 3
 
     this.loading = true;
 
@@ -126,7 +128,7 @@ export class TripFormComponent implements OnInit {
           alert('Circuit mis à jour avec succès');
           this.closeSidebar();
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Error updating circuit:', err);
           this.loading = false;
           alert('Erreur lors de la mise à jour du circuit');
@@ -139,7 +141,7 @@ export class TripFormComponent implements OnInit {
           alert('Circuit créé avec succès');
           this.closeSidebar();
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Error creating circuit:', err);
           this.loading = false;
           alert('Erreur lors de la création du circuit');

@@ -1,7 +1,5 @@
-<!-- trips/trips.component.html -->
 <div class="trips-page" [class.sidebar-active]="hasActiveChild()">
 
-  <!-- Header -->
   <div class="trips-header">
     <h2 class="trips-title">Liste des circuits</h2>
 
@@ -19,12 +17,10 @@
     </div>
   </div>
 
-  <!-- Main -->
   <div class="trips-main-area">
 
-    <!-- Grid -->
     <div class="trips-grid-section">
-      <div class="trips-grid" *ngIf="filteredTrips.length > 0; else noTrips">
+      <div class="trips-grid" *ngIf="filteredTrips.length > 0 || isLoading">
 
         <div
           class="trip-card"
@@ -49,21 +45,20 @@
 
       </div>
 
-      <ng-template #noTrips>
-        <div class="no-trips-message">
-          <i class="icon-trip"></i>
-          <h3>Aucun circuit trouvé</h3>
-          <button class="btn-add-trip" (click)="addNewTrip()">
-            + Ajouter un circuit
-          </button>
-        </div>
-      </ng-template>
-    </div>
+      <div *ngIf="isLoading" class="loading-spinner-container">
+        <div class="spinner"></div>
+      </div>
 
-    <!-- Sidebar -->
-    <div class="trips-sidebar-outlet" *ngIf="hasActiveChild()">
-      <router-outlet></router-outlet>
-    </div>
+      <div *ngIf="filteredTrips.length === 0 && !isLoading" class="no-trips-message">
+        <i class="icon-trip"></i>
+        <h3>Aucun circuit trouvé</h3>
+        <button class="btn-add-trip" (click)="addNewTrip()">
+          Créer votre premier circuit
+        </button>
+      </div>
 
+    </div>
   </div>
+
+  <router-outlet></router-outlet>
 </div>

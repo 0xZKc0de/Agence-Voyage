@@ -7,7 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/circuits")
@@ -23,6 +25,11 @@ public class CircuitController {
             @RequestParam(defaultValue = "8") int size
     ) {
         return ResponseEntity.ok(circuitService.getAllCircuits(page, size));
+    }
+
+    @GetMapping("/all")
+    public List<Circuit> getAllCircuitsList() {
+        return circuitService.findAll();
     }
 
     @GetMapping("/destinations")
@@ -57,12 +64,12 @@ public class CircuitController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteCircuit(@PathVariable int id) {
+    public ResponseEntity<Map<String, String>> deleteCircuit(@PathVariable int id) {
         try {
             circuitService.deleteCircuit(id);
-            return ResponseEntity.ok("Deleted successfully");
+            return ResponseEntity.ok(Collections.singletonMap("message", "Deleted successfully"));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 
