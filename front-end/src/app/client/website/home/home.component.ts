@@ -2,18 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../../services/auth.service'; // Assurez-vous que le chemin est correct
-
-interface Circuit {
-  id: number;
-  nom: string;
-  destination: string;
-  description: string;
-  prix: number;
-  duree: number;
-  imageUrl: string;
-  placesRestantes: number;
-}
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -23,50 +12,34 @@ interface Circuit {
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  featuredCircuits: Circuit[] = [];
+  featuredCircuits: any[] = [];
   isLoading = true;
-  isLoggedIn = false; // Variable pour suivre l'état de connexion
+  isLoggedIn = false;
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService // Injection du service d'authentification
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
-    // 1. S'abonner à l'état de l'utilisateur pour mettre à jour l'interface en temps réel
     this.authService.currentUser$.subscribe(user => {
-      this.isLoggedIn = !!user; // true si utilisateur connecté, false sinon
+      this.isLoggedIn = !!user;
     });
 
-    // 2. Charger les circuits (Code existant)
     this.loadFeaturedCircuits();
   }
 
   loadFeaturedCircuits() {
     this.isLoading = true;
-    // Données statiques pour l'exemple (à remplacer par votre appel API)
-    this.featuredCircuits = [
-      {
-        id: 1,
-        nom: 'Marrakech Impériale',
-        destination: 'Maroc',
-        description: 'Découvrez la ville ocre et ses trésors',
-        prix: 2999,
-        duree: 7,
-        imageUrl: 'image1.webp',
-        placesRestantes: 8
+    this.http.get<any>('http://localhost:8080/api/v1/circuits?page=0&size=3').subscribe({
+      next: (response) => {
+        this.featuredCircuits = response.content || [];
+        this.isLoading = false;
       },
-      {
-        id: 2,
-        nom: 'Sahara Aventure',
-        destination: 'Merzouga',
-        description: 'Nuit en bivouac dans le désert',
-        prix: 1899,
-        duree: 4,
-        imageUrl: 'image2.jpg',
-        placesRestantes: 5
+      error: (err) => {
+        console.error(err);
+        this.isLoading = false;
       }
-    ];
-    this.isLoading = false;
+    });
   }
 }
