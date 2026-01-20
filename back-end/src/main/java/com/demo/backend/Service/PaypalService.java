@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 
 @Service
 public class PaypalService {
@@ -41,7 +42,7 @@ public class PaypalService {
         // إعداد تفاصيل المبلغ
         AmountWithBreakdown amount = new AmountWithBreakdown()
                 .currencyCode("USD") // يمكنك تغيير العملة حسب مشروعك
-                .value(String.format("%.2f", total));
+                .value(String.format(Locale.US, "%.2f", total));
 
         PurchaseUnitRequest purchaseUnitRequest = new PurchaseUnitRequest().amountWithBreakdown(amount);
         orderRequest.purchaseUnits(Collections.singletonList(purchaseUnitRequest));

@@ -8,7 +8,7 @@ export interface Reservation {
   id: number;
   date: string;
   nbPersons: number;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
+  status: 'PENDING' | 'PAID' | 'CANCELLED';
   prixTotal?: number;
   circuit?: {
     id: number;
@@ -103,7 +103,7 @@ export class ReservationListComponent implements OnInit {
 
   getStatusText(status: string): string {
     switch (status) {
-      case 'CONFIRMED': return 'Confirmée';
+      case 'PAID': return 'Confirmée';
       case 'PENDING': return 'En attente';
       case 'CANCELLED': return 'Annulée';
       default: return status;
@@ -112,7 +112,7 @@ export class ReservationListComponent implements OnInit {
 
   getStatusBadgeClass(status: string): string {
     switch (status) {
-      case 'CONFIRMED': return 'badge-success';
+      case 'PAID': return 'badge-success';
       case 'PENDING': return 'badge-warning';
       case 'CANCELLED': return 'badge-error';
       default: return 'badge-default';
