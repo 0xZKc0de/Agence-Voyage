@@ -7,11 +7,12 @@
         type="text"
         placeholder="Rechercher..."
         [(ngModel)]="searchTerm"
+        (ngModelChange)="applyFilters()"
         class="search-input"
       />
 
       <div class="filter-options">
-        <select class="filter-select" [(ngModel)]="selectedDestination">
+        <select class="filter-select" [(ngModel)]="selectedDestination" (ngModelChange)="applyFilters()">
           <option value="">Toutes destinations</option>
           <option *ngFor="let dest of destinations" [value]="dest">{{ dest }}</option>
         </select>
@@ -20,7 +21,7 @@
   </div>
 
   <div class="circuits-grid">
-    <div class="circuit-card" *ngFor="let circuit of circuits" (click)="selectCircuit(circuit)">
+    <div class="circuit-card" *ngFor="let circuit of filteredCircuits" (click)="selectCircuit(circuit)">
       <div class="circuit-image">
         <img [src]="circuit.imageUrl || 'assets/default.jpg'" [alt]="circuit.distination">
         <div class="circuit-price">{{ circuit.prix | number }} DH</div>
@@ -44,6 +45,10 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div *ngIf="!isLoading && filteredCircuits.length === 0" class="no-results">
+    <p>Aucun circuit trouvé.</p>
   </div>
 
   <div class="loading-spinner" *ngIf="isLoading">

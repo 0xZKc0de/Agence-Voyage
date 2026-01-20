@@ -25,10 +25,12 @@ interface Circuit {
 })
 export class CircuitsComponent implements OnInit {
   circuits: Circuit[] = [];
+  filteredCircuits: Circuit[] = []; // القائمة التي سيتم عرضها بعد الفلترة
   isLoading = false;
   currentPage = 0;
   pageSize = 8;
   isLastPage = false;
+
   searchTerm: string = '';
   selectedDestination: string = '';
   destinations: string[] = [];
@@ -53,6 +55,7 @@ export class CircuitsComponent implements OnInit {
         next: (response) => {
           const newCircuits = response.content || [];
           this.circuits = [...this.circuits, ...newCircuits];
+          this.applyFilters(); // تطبيق الفلترة بعد تحميل البيانات
           this.isLastPage = response.last;
           if(!this.isLastPage) this.currentPage++;
           this.isLoading = false;
@@ -67,6 +70,23 @@ export class CircuitsComponent implements OnInit {
   loadDestinations() {
     this.http.get<string[]>('http://localhost:8080/api/v1/circuits/destinations')
       .subscribe(data => this.destinations = data);
+  }
+
+  // دالة الفلترة الرئيسية
+  applyFilters() {
+    this.filteredCircuits = this.circuits.filter(circuit => {
+      // فلترة حسب النص (يبحث في الوجهة والوصف)
+      const term = this.searchTerm.toLowerCase();
+      const matchesSearch = !term ||
+        (circuit.distination && circuit.distination.toLowerCase().includes(term)) ||
+        (circuit.description && circuit.description.toLowerCase().includes(term));
+
+      // فلترة حسب القائمة المنسدلة للوجهات
+      const matchesDest = !this.selectedDestination ||
+        circuit.distination === this.selectedDestination;
+
+      return matchesSearch && matchesDest;
+    });
   }
 
   @HostListener('window:scroll', [])

@@ -32,6 +32,7 @@
   outline: none;
   min-width: 250px;
   transition: border-color 0.3s;
+  background: white;
 }
 
 .search-input:focus, .filter-select:focus {
@@ -151,9 +152,15 @@
   color: white;
 }
 
-.loading-spinner {
+.loading-spinner, .no-results {
   text-align: center;
   padding: 40px;
+  width: 100%;
+}
+
+.no-results p {
+  font-size: 18px;
+  color: #888;
 }
 
 .spinner {

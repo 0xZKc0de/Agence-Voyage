@@ -12,7 +12,7 @@ export interface Reservation {
   prixTotal?: number;
   circuit?: {
     id: number;
-    destination: string; // التعامل مع الخطأ الإملائي المحتمل في الباك إند
+    destination: string;
     distination?: string;
     prix: number;
   };
@@ -30,11 +30,9 @@ export class ReservationListComponent implements OnInit {
   filteredReservations: Reservation[] = [];
   isLoading = true;
 
-  // Search & Filter
   searchTerm: string = '';
-  statusFilter: string = ''; // '' = All
+  statusFilter: string = '';
 
-  // Stats
   totalReservations = 0;
   pendingReservations = 0;
 
@@ -49,39 +47,33 @@ export class ReservationListComponent implements OnInit {
 
   loadReservations() {
     this.isLoading = true;
-    this.reservationService.getMyReservations().subscribe({
-      next: (data: any[]) => {
+    this.reservationService.getAllReservations().subscribe({
+      next: (data: any) => {
         this.reservations = data;
+        this.applyFilters();
         this.calculateStats();
-        this.filterReservations(); // Apply initial filters
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Erreur chargement réservations', err);
+        console.error(err);
         this.isLoading = false;
       }
     });
   }
 
-  // دالة جديدة لتفعيل التبويبات
-  setFilter(status: string) {
-    this.statusFilter = status;
-    this.filterReservations();
-  }
-
-  filterReservations() {
+  applyFilters() {
     this.filteredReservations = this.reservations.filter(res => {
-      // 1. Search Logic
-      const dest = res.circuit?.destination || res.circuit?.distination || '';
-      const matchesSearch = !this.searchTerm ||
-        dest.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        res.id.toString().includes(this.searchTerm);
-
-      // 2. Status Logic
+      const destination = res.circuit?.destination || res.circuit?.distination || '';
+      const matchesSearch = destination.toLowerCase().includes(this.searchTerm.toLowerCase());
       const matchesStatus = !this.statusFilter || res.status === this.statusFilter;
 
       return matchesSearch && matchesStatus;
     });
+  }
+
+  setFilter(status: string) {
+    this.statusFilter = status;
+    this.applyFilters();
   }
 
   clearFilters() {
@@ -94,7 +86,6 @@ export class ReservationListComponent implements OnInit {
     this.pendingReservations = this.reservations.filter(r => r.status === 'PENDING').length;
   }
 
-  // Helpers UI
   calculatePrice(res: Reservation): number {
     if (res.prixTotal) return res.prixTotal;
     const pricePerPerson = res.circuit?.prix || 0;
@@ -119,17 +110,28 @@ export class ReservationListComponent implements OnInit {
     }
   }
 
-  // Actions
   cancelReservation(res: Reservation) {
     if(confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')) {
-      this.reservationService.cancelReservation(res.id).subscribe(() => {
-        this.loadReservations(); // Refresh list
+      this.reservationService.cancelReservation(res.id).subscribe({
+        next: () => {
+          res.status = 'CANCELLED';
+          this.calculateStats();
+        },
+        error: (err) => console.error(err)
       });
     }
   }
 
   processPayment(res: Reservation) {
-    // Logic for payment (TBD)
-    console.log('Processing payment for', res.id);
+    if (res.circuit && res.circuit.id) {
+      this.router.navigate(['/client/reservations/create'], {
+        queryParams: {
+          circuitId: res.circuit.id,
+          participants: 1
+        }
+      });
+    } else {
+      console.error('Erreur: Impossible de trouver le circuit associé à cette réservation');
+    }
   }
 }

@@ -50,26 +50,26 @@
       </button>
     </div>
 
-    <div class="search-wrapper">
-      <span class="search-icon">🔍</span>
+    <div class="search-box">
       <input
         type="text"
-        placeholder="Rechercher une destination..."
+        placeholder="Rechercher par destination..."
         [(ngModel)]="searchTerm"
-        (ngModelChange)="filterReservations()"
-        class="search-input"
-      >
+        (ngModelChange)="applyFilters()">
     </div>
   </div>
 
-  <div class="table-container">
-    <table class="reservations-table">
+  <div *ngIf="isLoading" class="loader-container">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="reservations-table-container" *ngIf="!isLoading && filteredReservations.length > 0">
+    <table class="res-table">
       <thead>
       <tr>
-        <th>N°</th>
-        <th>Destination</th>
+        <th>Voyage</th>
         <th>Date</th>
-        <th>Personnes</th>
+        <th>Voyageurs</th>
         <th>Prix Total</th>
         <th>Statut</th>
         <th class="text-right">Actions</th>
@@ -77,12 +77,11 @@
       </thead>
       <tbody>
       <tr *ngFor="let res of filteredReservations">
-        <td class="res-id">#{{ res.id }}</td>
 
-        <td class="res-destination">
-          <div class="dest-wrapper">
-            <div class="dest-icon">✈️</div>
-            <span>{{ res.circuit?.destination || res.circuit?.distination || 'Circuit Inconnu' }}</span>
+        <td class="res-circuit">
+          <div class="circuit-info">
+            <span class="circuit-name">{{ res.circuit?.destination || res.circuit?.distination || 'Circuit Inconnu' }}</span>
+            <span class="circuit-id">#{{ res.id }}</span>
           </div>
         </td>
 
@@ -127,10 +126,7 @@
     <div class="empty-icon">📂</div>
     <h3>Aucune réservation trouvée</h3>
     <p>Vous n'avez pas de réservations dans cette catégorie.</p>
-    <button class="btn-text" (click)="clearFilters()">Voir toutes les réservations</button>
+    <button class="btn-text" (click)="clearFilters()">Afficher tout</button>
   </div>
 
-  <div *ngIf="isLoading" class="loading-state">
-    <div class="spinner"></div>
-  </div>
 </div>
