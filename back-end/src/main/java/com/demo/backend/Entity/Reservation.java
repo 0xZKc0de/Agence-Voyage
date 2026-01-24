@@ -44,7 +44,13 @@ public class Reservation {
     @JoinColumn(name = "circuit_id")
     private Circuit circuit;
 
+    public Date getDateReservation() {
+        return this.date;
+    }
+
     public void setDateReservation(Date date) {
         this.date = date;
     }
+
+
 }

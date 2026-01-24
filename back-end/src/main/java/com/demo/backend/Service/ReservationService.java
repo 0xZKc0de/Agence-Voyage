@@ -61,17 +61,16 @@ public class ReservationService {
 
         return reservationRepository.save(reservation);
     }
-
+    
     @Transactional
     public Reservation cancelReservation(int id) {
         Reservation res = reservationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reservation not found"));
 
-        if (!"PENDING".equals(res.getStatus())) {
-            throw new RuntimeException("Cannot cancel reservation. Status is not PENDING.");
+        if ("CANCELLED".equals(res.getStatus())) {
+            throw new RuntimeException("Reservation is already cancelled");
         }
 
-        // 3. Restore stock upon cancellation
         Circuit circuit = res.getCircuit();
         if (circuit != null) {
             circuit.setNb_places(circuit.getNb_places() + res.getNbPersons());
@@ -79,6 +78,7 @@ public class ReservationService {
         }
 
         res.setStatus("CANCELLED");
+
         return reservationRepository.save(res);
     }
 

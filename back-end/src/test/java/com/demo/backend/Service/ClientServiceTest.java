@@ -1,4 +1,4 @@
-package com.demo.backend;
+package com.demo.backend.Service;
 
 // JUnit 5 + Mockito
 
@@ -8,7 +8,6 @@ import com.demo.backend.Entity.Admin;
 import com.demo.backend.Entity.Client;
 import com.demo.backend.Repository.AdminRepository;
 import com.demo.backend.Repository.ClientRepository;
-import com.demo.backend.Service.ClientService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
