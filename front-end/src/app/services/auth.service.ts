@@ -25,26 +25,24 @@ export class AuthService {
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
+    // منطق استرجاع المستخدم عند تحديث الصفحة
     if (isPlatformBrowser(this.platformId)) {
       const storedUser = localStorage.getItem('currentUser');
       if (storedUser) {
         try {
           this.currentUserSubject.next(JSON.parse(storedUser));
         } catch (e) {
+          console.error('Erreur parsing utilisateur stocké', e);
           localStorage.removeItem('currentUser');
-          this.currentUserSubject.next(null);
         }
       }
     }
   }
 
-  get currentUserValue(): User | null {
-    return this.currentUserSubject.value;
-  }
-
   register(userData: any): Observable<any> {
     return this.http.post(`${this.authUrl}/register`, userData);
   }
+  // =========================================================
 
   login(credentials: any): Observable<User> {
     return this.http.post<User>(`${this.authUrl}/login`, credentials, { withCredentials: true })

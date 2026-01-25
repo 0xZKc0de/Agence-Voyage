@@ -28,22 +28,26 @@ public class PaypalService {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    // 1. إنشاء طلب الدفع
     public Order createOrder(int reservationId) throws IOException {
         Reservation res = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new RuntimeException("Reservation not found with ID: " + reservationId));
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
 
+        // حساب المبلغ الإجمالي (عدد الأشخاص * سعر الرحلة)
         double total = res.getNbPersons() * res.getCircuit().getPrix();
 
         OrderRequest orderRequest = new OrderRequest();
         orderRequest.checkoutPaymentIntent("CAPTURE");
 
+        // إعداد تفاصيل المبلغ
         AmountWithBreakdown amount = new AmountWithBreakdown()
-                .currencyCode("DH")
+                .currencyCode("USD") // يمكنك تغيير العملة حسب مشروعك
                 .value(String.format(Locale.US, "%.2f", total));
 
         PurchaseUnitRequest purchaseUnitRequest = new PurchaseUnitRequest().amountWithBreakdown(amount);
         orderRequest.purchaseUnits(Collections.singletonList(purchaseUnitRequest));
 
+        // روابط العودة بعد الدفع
         ApplicationContext applicationContext = new ApplicationContext()
                 .returnUrl("http://localhost:4200/payment/success?resId=" + reservationId)
                 .cancelUrl("http://localhost:4200/payment/cancel");
@@ -53,19 +57,19 @@ public class PaypalService {
         return payPalHttpClient.execute(request).result();
     }
 
+    // 2. تنفيذ الدفع وتحديث الجداول (Reservation & Payment)
     @Transactional
     public void captureOrder(String orderId, int reservationId) throws IOException {
         OrdersCaptureRequest request = new OrdersCaptureRequest(orderId);
         HttpResponse<Order> response = payPalHttpClient.execute(request);
 
         if (response.result().status().equals("COMPLETED")) {
-
-            Reservation res = reservationRepository.findById(reservationId)
-                    .orElseThrow(() -> new RuntimeException("Reservation not found for payment capture. ID: " + reservationId));
-
+            // تحديث حالة الحجز
+            Reservation res = reservationRepository.findById(reservationId).get();
             res.setStatus("PAID");
             reservationRepository.save(res);
 
+            // إنشاء سجل دفع جديد
             Payment payment = new Payment();
             payment.setReservation(res);
             payment.setMontant(res.getNbPersons() * res.getCircuit().getPrix());
