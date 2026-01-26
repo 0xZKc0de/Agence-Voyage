@@ -21,7 +21,6 @@ export class CircuitService {
     return this.http.get<any>(`${this.apiUrl}?page=${page}&size=${size}`);
   }
 
-  // 🔥 هذه للأدمن (بدون Pagination)
   getAllCircuitsList(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/all`);
   }

@@ -86,8 +86,6 @@ export class TripDetailComponent implements OnInit, OnDestroy {
         next: () => {
           alert('Circuit supprimé avec succès');
           this.closeSidebar();
-          // يمكنك إضافة تحديث للصفحة الرئيسية هنا إذا لزم الأمر
-          // window.location.reload();
         },
         error: (err: any) => {
           console.error('Erreur suppression:', err);

@@ -65,10 +65,9 @@ export class TripsComponent implements OnInit, OnDestroy {
   loadAllTrips(): void {
     this.isLoading = true;
 
-    // 🔥 استخدام الدالة الجديدة التي تجلب مصفوفة مباشرة
+
     this.circuitService.getAllCircuitsList().subscribe({
       next: (data: any[]) => {
-        // data هنا هي مصفوفة مباشرة وليست Page
         this.trips = data.map((circuit: any) => ({
           id: circuit.id,
           nom: circuit.distination || 'Voyage ' + circuit.id,

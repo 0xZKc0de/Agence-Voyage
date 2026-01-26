@@ -18,7 +18,7 @@ export class PaypalPaymentComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private paypalService: PaypalService // حقن الخدمة
+    private paypalService: PaypalService
   ) {}
 
   ngOnInit() {
@@ -31,7 +31,6 @@ export class PaypalPaymentComponent implements OnInit {
         };
         this.isLoading = false;
       } else {
-        // إذا لم توجد بيانات، نعود للقائمة
         this.router.navigate(['/client/reservations']);
       }
     });

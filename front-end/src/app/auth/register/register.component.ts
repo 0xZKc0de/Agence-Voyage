@@ -43,14 +43,14 @@ export class ClientRegisterComponent {
       this.isLoading = true;
       this.errorMessage = '';
 
-      // تأكد من إرسال كل الحقول التي يتوقعها الـ RegistrationRequest.java
+
       const registrationData = {
         firstName: this.registerForm.value.prenom,
         lastName: this.registerForm.value.nom,
         email: this.registerForm.value.email,
         phone: this.registerForm.value.telephone,
         password: this.registerForm.value.motDePasse,
-        confirmPassword: this.registerForm.value.confirmMotDePasse // هذا الحقل هو السر!
+        confirmPassword: this.registerForm.value.confirmMotDePasse
       };
 
       this.authService.register(registrationData).subscribe({
@@ -61,7 +61,6 @@ export class ClientRegisterComponent {
         },
         error: (err: any) => {
           this.isLoading = false;
-          // هنا سيعرض لك السيرفر السبب الحقيقي (إما تكرار الإيميل أو تكرار الهاتف)
           this.errorMessage = err.error;
           console.log('Error from server:', err.error);
         }

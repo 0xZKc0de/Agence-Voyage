@@ -25,7 +25,7 @@ interface Circuit {
 })
 export class CircuitsComponent implements OnInit {
   circuits: Circuit[] = [];
-  filteredCircuits: Circuit[] = []; // القائمة التي سيتم عرضها بعد الفلترة
+  filteredCircuits: Circuit[] = [];
   isLoading = false;
   currentPage = 0;
   pageSize = 8;
@@ -55,7 +55,7 @@ export class CircuitsComponent implements OnInit {
         next: (response) => {
           const newCircuits = response.content || [];
           this.circuits = [...this.circuits, ...newCircuits];
-          this.applyFilters(); // تطبيق الفلترة بعد تحميل البيانات
+          this.applyFilters();
           this.isLastPage = response.last;
           if(!this.isLastPage) this.currentPage++;
           this.isLoading = false;
@@ -72,16 +72,15 @@ export class CircuitsComponent implements OnInit {
       .subscribe(data => this.destinations = data);
   }
 
-  // دالة الفلترة الرئيسية
+
   applyFilters() {
     this.filteredCircuits = this.circuits.filter(circuit => {
-      // فلترة حسب النص (يبحث في الوجهة والوصف)
+
       const term = this.searchTerm.toLowerCase();
       const matchesSearch = !term ||
         (circuit.distination && circuit.distination.toLowerCase().includes(term)) ||
         (circuit.description && circuit.description.toLowerCase().includes(term));
 
-      // فلترة حسب القائمة المنسدلة للوجهات
       const matchesDest = !this.selectedDestination ||
         circuit.distination === this.selectedDestination;
 
