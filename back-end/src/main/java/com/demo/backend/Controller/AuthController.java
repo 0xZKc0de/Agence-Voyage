@@ -47,14 +47,13 @@ public class AuthController {
                                    HttpServletRequest httpRequest,
                                    HttpServletResponse httpResponse) {
 
-        // 1. التحقق من الأدمن
+
         Optional<Admin> admin = adminRepository.findByEmail(request.getEmail());
         if (admin.isPresent() && passwordEncoder.matches(request.getPassword(), admin.get().getPassword())) {
             authenticateUser(httpRequest, httpResponse, admin.get().getEmail(), admin.get().getRole(), admin.get().getId());
             return ResponseEntity.ok(admin.get());
         }
 
-        // 2. التحقق من العميل
         Optional<Client> client = clientRepository.findByEmail(request.getEmail());
         if (client.isPresent() && passwordEncoder.matches(request.getPassword(), client.get().getPassword())) {
             authenticateUser(httpRequest, httpResponse, client.get().getEmail(), client.get().getRole(), client.get().getId());
@@ -72,7 +71,6 @@ public class AuthController {
         context.setAuthentication(auth);
         SecurityContextHolder.setContext(context);
 
-        // حفظ الجلسة لكي يتذكر السيرفر المتصفح
         securityContextRepository.saveContext(context, request, response);
 
         HttpSession session = request.getSession(true);

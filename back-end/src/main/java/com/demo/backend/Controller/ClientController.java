@@ -19,8 +19,6 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
-    // ✅ هذا الرابط هو المسؤول عن عرض القائمة في الفرونت إند
-    // سيعمل الآن لأن Service يعيد DTO وفيه Transactional
     @GetMapping
     public ResponseEntity<List<ClientDTO>> getAllClients() {
         return ResponseEntity.ok(clientService.getAllClientsDTO());
@@ -48,7 +46,6 @@ public class ClientController {
         String role = (String) session.getAttribute("role");
         Integer loggedUserId = (Integer) session.getAttribute("userId");
 
-        // السماح للأدمن أو صاحب الحساب فقط بالتعديل
         if (role != null && (role.equals("ROLE_ADMIN") || (role.equals("ROLE_CLIENT") && loggedUserId != null && loggedUserId == id))) {
             return ResponseEntity.ok(clientService.updateClient(id, client));
         }
@@ -65,7 +62,7 @@ public class ClientController {
             clientService.deleteClient(id);
 
             if (role.equals("ROLE_CLIENT")) {
-                session.invalidate(); // تسجيل خروج إذا حذف العميل حسابه بنفسه
+                session.invalidate();
             }
             return ResponseEntity.ok("Compte supprimé avec succès.");
         }

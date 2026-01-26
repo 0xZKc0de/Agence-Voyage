@@ -47,8 +47,6 @@ public class ClientService {
 
         return clientRepository.save(client);
     }
-
-    // 🔥 هذه الدالة كانت ناقصة، وتمت إضافتها لإصلاح الخطأ في Controller
     public Client updateClient(int id, Client clientDetails) {
         Client existingClient = clientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
@@ -57,7 +55,7 @@ public class ClientService {
         existingClient.setLastName(clientDetails.getLastName());
         existingClient.setPhone(clientDetails.getPhone());
         existingClient.setEmail(clientDetails.getEmail());
-        // ملاحظة: لا نحدث كلمة المرور هنا لأسباب أمنية
+
 
         return clientRepository.save(existingClient);
     }
@@ -77,7 +75,6 @@ public class ClientService {
         return clientRepository.findById(id);
     }
 
-    // ✅ هذه الدالة ستضمن عمل القائمة في الفرونت إند بفضل Transactional
     @Transactional(readOnly = true)
     public List<ClientDTO> getAllClientsDTO() {
         return clientRepository.findAll()

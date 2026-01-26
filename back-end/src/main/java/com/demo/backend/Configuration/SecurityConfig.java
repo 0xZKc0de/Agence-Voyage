@@ -28,23 +28,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // السماح بمسارات الصور والملفات
                         .requestMatchers("/images/**").permitAll()
 
-                        // --- نقاط التعديل الهامة هنا ---
-
-                        // 1. السماح بكافة عمليات الحجز (إنشاء، عرض، إلخ)
                         .requestMatchers("/api/reservations/**").permitAll()
 
                         .requestMatchers("/api/clients/**").permitAll()
 
-                        // 2. السماح بكافة عمليات PayPal (إنشاء الدفع، التأكيد)
                         .requestMatchers("/api/paypal/**").permitAll()
 
-                        // 3. السماح بمسارات الرحلات (Circuits)
                         .requestMatchers("/api/v1/circuits/**").permitAll()
 
-                        // أي طلب آخر يتطلب تسجيل دخول
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -57,7 +50,6 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // تأكد من أن هذا الرابط يطابق رابط الفرونت إند الخاص بك
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));

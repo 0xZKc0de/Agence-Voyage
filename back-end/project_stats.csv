@@ -1,0 +1,9 @@
+files,language,blank,comment,code,"github.com/AlDanial/cloc v 2.06  T=0.47 s (110.3 files/s 6708.8 lines/s)"
+32,Java,438,91,1453
+11,XML,0,0,534
+1,Bourne Shell,32,52,211
+1,DOS Batch,24,0,165
+1,Maven,8,0,120
+4,Text,0,0,16
+2,Properties,5,0,15
+52,SUM,507,143,2514
